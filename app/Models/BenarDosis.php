@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class BenarDosis extends Model
+{
+    //
+    use HasFactory;
+
+    protected $table = 'bnr_dosis'; // Menentukan nama tabel secara eksplisit
+
+    protected $primaryKey = 'id_bnr_dosis'; // Menentukan primary key secara eksplisit
+
+    protected $fillable = [
+        'is_jumlah',
+        'is_potensi',
+        'is_no_reg',
+        'tanggal',
+        'jam',
+        'id_petugas',
+        'keterangan',
+        'no_reg',
+        'no_cm',
+    ];
+
+
+    protected $casts = [
+        'is_jumlah' => 'boolean',
+        'is_potensi' => 'boolean',
+        'tanggal' => 'date', // Mengubah ke tipe date
+    ];
+
+
+    public function farTransaction(): BelongsTo
+    {
+        return $this->belongsTo(FarTransaction::class, 'no_reg', 'no_reg');
+    }
+
+    /**
+     * Get the master pasien that owns the bnr dosis.
+     */
+    public function masterPasien(): BelongsTo
+    {
+        return $this->belongsTo(MasterPasien::class, 'no_cm', 'no_cm');
+    }
+}

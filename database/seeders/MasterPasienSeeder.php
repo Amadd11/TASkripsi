@@ -1,0 +1,125 @@
+<?php
+
+namespace Database\Seeders;
+
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use App\Models\MasterPasien;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class MasterPasienSeeder extends Seeder
+{
+    public function run(): void
+    {
+        DB::table('master_pasien')->insert([
+            'iol' => 'I',
+            'tgl_kunj' => Carbon::now(),
+            'no_cm' => '00001234', // Nomor Rekam Medis unik
+            'nama_pas' => 'Budi Santoso',
+            'tgl_lahir' => Carbon::parse('1985-05-01 00:00:00'), // Menggunakan Carbon::parse untuk tanggal lahir
+            'alamat' => 'Jl. Merdeka No. 123, RT 01/RW 02',
+            'kec' => '0201',
+            'nama_ortu' => 'Ayah Budi',
+            'pek_pasien' => 'Pegawai Swasta',
+            'pek_ortu' => 'PNS',
+            'alm_ortu' => 'Jl. Merdeka No. 123, RT 01/RW 02',
+            'sex' => 'L',
+            'kelas' => 'III',
+            'no_reg' => 'REG00001',
+            'unit' => 'Poli Umum',
+            'pend' => 'S1',
+            'agama' => 'Islam',
+            'jam' => Carbon::now()->format('H:i:s'), // Format waktu
+            'diagnosa' => 'Demam',
+            'bl' => 'A',
+            'identitas' => 'KTP',
+            'pengirim' => 'Mandiri',
+            'gol' => 'A',
+            'gawat' => 'Tidak',
+            'al_kir' => 'RSUD',
+            'nama_peng' => 'Pengirim Klinik',
+            'pin' => 'N',
+            'tgl_kunj1' => Carbon::now()->subDays(7),
+            'tgl_kunj2' => Carbon::now()->subDays(3),
+            'desa' => 'Desa A',
+            'jam1' => Carbon::now()->subHours(2)->format('H:i:s'),
+            'jam2' => Carbon::now()->subHours(1)->format('H:i:s'),
+            'kls1' => 'A',
+            'kls2' => 'B',
+            'kkk' => '01',
+            'kdu' => '02',
+            'status' => 'Menikah',
+            'hub' => 'Keluarga',
+            'kab' => 'Sleman',
+            'telp' => '081234567890',
+            'asuransi' => 'BPJS Kesehatan',
+            'aktif' => 'AKTIF',
+            'no_px' => 1,
+            'petugas_tpp' => 'Petugas A',
+            'dokter' => 'dr. Siti',
+            'perawat' => 'Perawat B',
+            'tgl_pl' => Carbon::now()->addDays(1),
+            'jam_pl' => Carbon::now()->addHours(3)->format('H:i:s'),
+            'bbbb' => 'BBBB1',
+            'kd_dx' => 'R50.9',
+            'waktu' => 'Pagi',
+            'telp_ortu' => '081122334455',
+            'kunjungan' => 5,
+            'cara_masuk' => 'Jalan Kaki',
+            'polisi' => 'Tidak',
+            'ruang' => 101,
+            'tgl_inap' => Carbon::now()->subDays(1),
+            'jam_inap' => '10:00:00',
+            'status_kary' => 'Karyawan',
+            'gzresp' => 'T',
+            'cek' => 1,
+            'id_menikah' => 1,
+            'id_propinsi' => '34', // Contoh kode provinsi
+            'no_kpsta' => 'KPSTA12345',
+            'asal_daerah' => 'Yogyakarta',
+            'id_retensi' => 1,
+            'id_alergi' => 0,
+            'fis_asuhan' => 1,
+            'catatan_bpjs' => 'Catatan BPJS pasien ini.',
+            'cek_kpsta' => 0,
+            'cek_ktp' => 1,
+            'cek_kk' => 1,
+            'bank_v_lab' => 0,
+            'bank_v_far' => 0,
+            'bank_v_rad' => 0,
+            'bank_v_gz' => 0,
+            'bank_v_fis' => 0,
+            'nik' => '3404123456789012',
+            'flag_mcu' => 0,
+            'flag_penyakit' => 0,
+            'flag_pasien' => 0,
+            'flag_status' => 1,
+            'flag_prolanis' => 0,
+            'paraf' => 'Tanda tangan pasien',
+            'id_prop_domisili' => '34',
+            'id_kab_domisili' => '3404',
+            'id_kec_domisili' => '340401',
+            'id_desa_domisili' => '340401001',
+            'alamat_domisili' => 'Jl. Domisili No. 10, RT 03/RW 04',
+            'lokasi_domisili' => 'Near city center',
+            'ihs' => 'IHS_CODE_123',
+            'reg_sitb' => 'REG_SITB_456',
+            'no_sep' => 'SEP_000000001',
+            'ihs_labmu' => 'LABMU_CODE_789',
+            'is_hiv' => 0,
+            'is_hbs' => 0,
+            'is_tbc' => 0,
+            'is_pulang' => 0,
+            'is_titip' => 0,
+            'is_farmasi' => 0,
+            'is_radiologi' => 0,
+            'is_laboratorium' => 0,
+            'tempat' => 'Ruang Poli',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        MasterPasien::factory()->count(50)->create();
+    }
+}
