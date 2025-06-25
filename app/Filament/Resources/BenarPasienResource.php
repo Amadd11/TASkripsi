@@ -32,15 +32,7 @@ class BenarPasienResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('no_cm')
                             ->label('Nomor Rekam Medis Pasien')
-                            ->relationship(
-                                'masterPasien',
-                                'no_cm',
-                                function ($query) {
-                                    $query->whereNotIn('no_cm', function ($subquery) {
-                                        $subquery->select('no_cm')->from('bnr_pasien');
-                                    });
-                                }
-                            )
+                            ->relationship('masterPasien', 'no_cm')
                             ->getOptionLabelFromRecordUsing(fn(MasterPasien $record) => "{$record->no_cm} - {$record->nama_pas}") // Menampilkan No. CM dan Nama Pasien
                             ->searchable()
                             ->preload()
@@ -48,6 +40,12 @@ class BenarPasienResource extends Resource
                             ->afterStateUpdated(function ($state, callable $set) {
                                 $pasien = MasterPasien::where('no_cm', $state)->first();
                                 $set('no_reg', $pasien?->no_reg);
+                            })
+                            ->afterStateHydrated(function ($state, callable $set) {
+                                if ($state) {
+                                    $pasien = MasterPasien::where('no_cm', $state)->first();
+                                    $set('no_reg', $pasien?->no_reg);
+                                }
                             })
                             ->helperText('Pilih nomor rekam medis pasien yang sudah terdaftar.'),
                         Forms\Components\TextInput::make('no_reg')
@@ -79,7 +77,6 @@ class BenarPasienResource extends Resource
                             ->required(),
                         Forms\Components\TimePicker::make('jam')
                             ->label('Jam')
-                            ->native(false) // Untuk tampilan picker yang lebih baik
                             ->required(),
                         Forms\Components\TextInput::make('id_petugas')
                             ->label('ID Petugas')

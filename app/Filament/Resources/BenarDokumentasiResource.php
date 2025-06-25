@@ -28,21 +28,12 @@ class BenarDokumentasiResource extends Resource
     {
         return $form
             ->schema([
-
                 Forms\Components\Section::make('Informasi Benar Dokumentasi')
                     ->description('Pastikan semua data terkait dokumentasi sudah benar.')
                     ->schema([
                         Forms\Components\Select::make('no_cm')
                             ->label('Nomor Rekam Medis Pasien')
-                            ->relationship(
-                                'masterPasien',
-                                'no_cm',
-                                function ($query) {
-                                    $query->whereNotIn('no_cm', function ($subquery) {
-                                        $subquery->select('no_cm')->from('bnr_dokumentasi');
-                                    });
-                                }
-                            )
+                            ->relationship('masterPasien', 'no_cm')
                             ->getOptionLabelFromRecordUsing(fn(MasterPasien $record) => "{$record->no_cm} - {$record->nama_pas}") // Menampilkan No. CM dan Nama Pasien
                             ->searchable()
                             ->preload()
@@ -51,9 +42,15 @@ class BenarDokumentasiResource extends Resource
                                 $pasien = MasterPasien::where('no_cm', $state)->first();
                                 $set('no_reg', $pasien?->no_reg);
                             })
+                            ->afterStateHydrated(function ($state, callable $set) {
+                                if ($state) {
+                                    $pasien = MasterPasien::where('no_cm', $state)->first();
+                                    $set('no_reg', $pasien?->no_reg);
+                                }
+                            })
                             ->helperText('Pilih nomor rekam medis pasien yang sudah terdaftar.'),
                         Forms\Components\TextInput::make('no_reg')
-                            ->label('Nomor Registrasi ')
+                            ->label('Nomor Registrasi')
                             ->disabled(),
                         Forms\Components\Fieldset::make('Verifikasi Dokumentasi')
                             ->schema([

@@ -4,33 +4,28 @@ namespace App\Filament\Widgets;
 
 use Carbon\Carbon;
 use App\Models\BenarCara;
-use Filament\Widgets\Widget; // Ubah dari StatsOverviewWidget menjadi Widget
+use Filament\Widgets\Widget;
+use App\Filament\Pages\RekapitulasiChartPage;
 
-class BenarCaraStats extends Widget // Ubah BaseWidget menjadi Widget
+class BenarCaraStats extends Widget
 {
-    protected static ?int $sort = 6;
-    protected static string $heading = 'Benar Cara Pada Bulan ini';
 
-    // Definisikan view kustom untuk widget ini
+    protected static ?string $heading = 'Benar Cara Pada Bulan Ini';
+
     protected static string $view = 'filament.widgets.benar-cara-stats';
 
-    // Properti publik untuk filter
-    public ?string $filter = null; // Akan menyimpan nilai filter (e.g., '2023-01')
+    public ?string $filter = null;
 
-    // Properti publik untuk menyimpan hasil statistik
     public int $total = 0;
     public int $allTrue = 0;
     public float $allTruePct = 0.0;
-    public array $monthsOptions = []; // Opsi bulan untuk dropdown filter
+    public array $monthsOptions = [];
 
     public function mount(): void
     {
-        // Set nilai default filter ke bulan saat ini jika belum ada
-        if (is_null($this->filter)) {
-            $this->filter = Carbon::now()->format('Y-m');
-        }
-        $this->updateStats(); // Panggil updateStats saat pertama kali dimuat
-        $this->monthsOptions = $this->getMonthsOptions(); // Isi opsi bulan
+        $this->filter ??= Carbon::now()->format('Y-m');
+        $this->monthsOptions = $this->getMonthsOptions();
+        $this->updateStats();
     }
 
     public function updatedFilter(): void
@@ -38,22 +33,13 @@ class BenarCaraStats extends Widget // Ubah BaseWidget menjadi Widget
         $this->updateStats();
     }
 
-    // Metode untuk menghitung dan memperbarui statistik
     protected function updateStats(): void
     {
-        // Tentukan rentang tanggal berdasarkan filter yang dipilih
-        if ($this->filter) {
-            $startOfMonth = Carbon::parse($this->filter)->startOfMonth();
-            $endOfMonth = Carbon::parse($this->filter)->endOfMonth();
-        } else {
-            // Default: bulan ini jika tidak ada filter yang dipilih
-            $startOfMonth = Carbon::now()->startOfMonth();
-            $endOfMonth = Carbon::now()->endOfMonth();
-        }
+        $startOfMonth = Carbon::parse($this->filter)->startOfMonth();
+        $endOfMonth = Carbon::parse($this->filter)->endOfMonth();
 
-        // Lakukan query data dengan filter tanggal
         $query = BenarCara::query()
-            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth]); // Filter berdasarkan kolom 'tanggal'
+            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth]);
 
         $this->total = $query->count();
 
@@ -61,19 +47,17 @@ class BenarCaraStats extends Widget // Ubah BaseWidget menjadi Widget
             $this->allTrue = 0;
             $this->allTruePct = 0.0;
         } else {
-            // Kloning query agar whereBetween tidak diaplikasikan dua kali pada builder yang sama
-            $allTrueQuery = BenarCara::query()
+            $this->allTrue = BenarCara::query()
                 ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
                 ->where('is_oral', true)
-                ->where('is_iv', true)
                 ->where('is_im', true)
+                ->where('is_iv', true)
                 ->count();
 
             $this->allTruePct = ($this->allTrue / $this->total) * 100;
         }
     }
 
-    // Metode untuk mendapatkan opsi bulan/tahun (seperti getFilters sebelumnya)
     protected function getMonthsOptions(): array
     {
         $months = [];
@@ -82,5 +66,10 @@ class BenarCaraStats extends Widget // Ubah BaseWidget menjadi Widget
             $months[$month->format('Y-m')] = $month->translatedFormat('F Y');
         }
         return $months;
+    }
+
+    public static function canView(): bool
+    {
+        return request()->route()?->getName() === RekapitulasiChartPage::getRouteName();
     }
 }

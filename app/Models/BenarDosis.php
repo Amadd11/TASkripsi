@@ -35,11 +35,6 @@ class BenarDosis extends Model
     ];
 
 
-    public function farTransaction(): BelongsTo
-    {
-        return $this->belongsTo(FarTransaction::class, 'no_reg', 'no_reg');
-    }
-
     /**
      * Get the master pasien that owns the bnr dosis.
      */

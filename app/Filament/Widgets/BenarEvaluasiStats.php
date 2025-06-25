@@ -2,14 +2,14 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\BenarEvaluasi;
 use Carbon\Carbon;
 use Filament\Widgets\Widget;
+use App\Models\BenarEvaluasi;
+use App\Filament\Pages\RekapitulasiChartPage;
 
 
 class BenarEvaluasiStats extends Widget
 {
-    protected static ?int $sort = 6;
     protected static ?string $heading = 'Benar Evaluasi Pada Bulan ini';
 
     protected static string $view = 'filament.widgets.benar-evaluasi-stats';
@@ -66,5 +66,10 @@ class BenarEvaluasiStats extends Widget
             $months[$month->format('Y-m')] = $month->translatedFormat('F Y');
         }
         return $months;
+    }
+
+    public static function canView(): bool
+    {
+        return request()->route()?->getName() === RekapitulasiChartPage::getRouteName();
     }
 }

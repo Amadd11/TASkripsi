@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BenarCaraResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BenarCaraResource\RelationManagers;
+use App\Filament\Widgets\BenarCaraStats;
+use App\Filament\Widgets\BenarHakClientStats;
+use App\Filament\Widgets\PersentaseKepatuhan\BenarCaraPercentageStats;
 
 class BenarCaraResource extends Resource
 {
@@ -33,15 +36,7 @@ class BenarCaraResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('no_cm')
                             ->label('Nomor Rekam Medis Pasien')
-                            ->relationship(
-                                'masterPasien',
-                                'no_cm',
-                                function ($query) {
-                                    $query->whereNotIn('no_cm', function ($subquery) {
-                                        $subquery->select('no_cm')->from('bnr_cara');
-                                    });
-                                }
-                            )
+                            ->relationship('masterPasien', 'no_cm')
                             ->getOptionLabelFromRecordUsing(fn(MasterPasien $record) => "{$record->no_cm} - {$record->nama_pas}") // Menampilkan No. CM dan Nama Pasien
                             ->searchable()
                             ->preload()
@@ -50,7 +45,15 @@ class BenarCaraResource extends Resource
                                 $pasien = MasterPasien::where('no_cm', $state)->first();
                                 $set('no_reg', $pasien?->no_reg);
                             })
+                            ->afterStateHydrated(function ($state, callable $set) {
+                                if ($state) {
+                                    $pasien = MasterPasien::where('no_cm', $state)->first();
+                                    $set('no_reg', $pasien?->no_reg);
+                                }
+                            })
                             ->helperText('Pilih nomor rekam medis pasien yang sudah terdaftar.'),
+                        // Menonaktifkan field ini di halaman Edit agar tidak bisa diubah
+                        // ->disabled(fn(string $operation): bool => $operation === 'edit'),
                         Forms\Components\TextInput::make('no_reg')
                             ->label('Nomor Registrasi')
                             ->disabled(),
@@ -85,7 +88,6 @@ class BenarCaraResource extends Resource
                             ->label('ID Petugas')
                             ->numeric()
                             ->nullable(),
-
                         Forms\Components\Textarea::make('keterangan')
                             ->label('Keterangan Tambahan')
                             ->columnSpanFull()
@@ -93,7 +95,6 @@ class BenarCaraResource extends Resource
                     ])->columns(2),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table

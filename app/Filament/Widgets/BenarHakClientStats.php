@@ -4,15 +4,14 @@ namespace App\Filament\Widgets;
 
 use Carbon\Carbon;
 use Filament\Widgets\Widget;
-use App\Models\BenarDokumentasi;
+use App\Models\BenarHakClient;
 use App\Filament\Pages\RekapitulasiChartPage;
 
-class BenarDokumentasiStats extends Widget
+class BenarHakClientStats extends Widget
 {
+    protected static ?string $heading = 'Benar Hak Client Pada Bulan ini';
 
-    protected static ?string $heading = 'Benar Dokumentasi Pada Bulan Ini';
-
-    protected static string $view = 'filament.widgets.benar-dokumentasi-stats';
+    protected static string $view = 'filament.widgets.benar-hak-client-stats';
 
     public ?string $filter = null;
 
@@ -24,8 +23,8 @@ class BenarDokumentasiStats extends Widget
     public function mount(): void
     {
         $this->filter ??= Carbon::now()->format('Y-m');
-        $this->monthsOptions = $this->getMonthsOptions();
         $this->updateStats();
+        $this->monthsOptions = $this->getMonthsOptions();
     }
 
     public function updatedFilter(): void
@@ -38,7 +37,7 @@ class BenarDokumentasiStats extends Widget
         $startOfMonth = Carbon::parse($this->filter)->startOfMonth();
         $endOfMonth = Carbon::parse($this->filter)->endOfMonth();
 
-        $query = BenarDokumentasi::query()
+        $query = BenarHakClient::query()
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth]);
 
         $this->total = $query->count();
@@ -47,13 +46,9 @@ class BenarDokumentasiStats extends Widget
             $this->allTrue = 0;
             $this->allTruePct = 0.0;
         } else {
-            $this->allTrue = BenarDokumentasi::query()
+            $this->allTrue = BenarHakClient::query()
                 ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
-                ->where('is_pasien', true)
-                ->where('is_dosis', true)
-                ->where('is_obat', true)
-                ->where('is_waktu', true)
-                ->where('is_rute', true)
+                ->where('is_ic', true)
                 ->count();
 
             $this->allTruePct = ($this->allTrue / $this->total) * 100;
@@ -69,7 +64,6 @@ class BenarDokumentasiStats extends Widget
         }
         return $months;
     }
-
     public static function canView(): bool
     {
         return request()->route()?->getName() === RekapitulasiChartPage::getRouteName();
