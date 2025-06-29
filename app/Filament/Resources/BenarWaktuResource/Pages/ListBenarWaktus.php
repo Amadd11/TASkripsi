@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BenarWaktuResource\Pages;
 
 use App\Filament\Resources\BenarWaktuResource;
+use App\Filament\Widgets\PersentaseKepatuhan\BenarWaktuPercentageStats;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,12 @@ class ListBenarWaktus extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+     protected function getFooterWidgets(): array
+    {
+        return [
+            BenarWaktuPercentageStats::class
         ];
     }
 }

@@ -49,9 +49,9 @@ class BenarObatStats extends Widget
         } else {
             $this->allTrue = BenarObat::query()
                 ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
-                ->where('is_alergi', true)
-                ->where('is_efek_samping', true)
-                ->where('is_efek_terapi', true)
+                ->where('is_nama_obat', true)
+                ->where('is_resep', true)
+                ->where('is_label', true)
                 ->count();
 
             $this->allTruePct = ($this->allTrue / $this->total) * 100;

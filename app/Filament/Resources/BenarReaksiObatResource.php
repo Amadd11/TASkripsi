@@ -67,27 +67,24 @@ class BenarReaksiObatResource extends Resource
                                     ->hint('Centang jika efek terapi yang diharapkan dari obat tercapai.')
                                     ->required(),
                             ])->columns(1), // Toggles di dalam Fieldset tetap 1 kolom
-
+                        Forms\Components\DatePicker::make('tanggal')
+                            ->label('Tanggal')
+                            ->native(false)
+                            ->required(),
+                        Forms\Components\TimePicker::make('jam')
+                            ->label('Jam')
+                            ->required(),
+                        Forms\Components\TextInput::make('id_petugas')
+                            ->label('ID Petugas')
+                            ->minValue(0)
+                            ->numeric()
+                            ->helperText('ID petugas yang bertanggung jawab.'),
                         Forms\Components\TextInput::make('is_no_reg')
                             ->label('Nomor Registrasi Internal')
                             ->numeric()
                             ->default(0)
                             ->minValue(0)
-                            ->helperText('Nomor registrasi internal untuk pencatatan.')
-                            ->columnSpan(1), // Memastikan mengambil 1 kolom penuh
-                        Forms\Components\DatePicker::make('tanggal')
-                            ->label('Tanggal')
-                            ->native(false) // Untuk tampilan picker yang lebih baik
-                            ->required(),
-                        Forms\Components\TimePicker::make('jam')
-                            ->label('Jam')
-                            ->native(false) // Untuk tampilan picker yang lebih baik
-                            ->required(),
-                        Forms\Components\TextInput::make('id_petugas')
-                            ->label('ID Petugas')
-                            ->numeric()
-                            ->nullable()
-                            ->helperText('ID petugas yang bertanggung jawab.'),
+                            ->helperText('Nomor registrasi internal untuk pencatatan.'),
                         Forms\Components\Textarea::make('keterangan')
                             ->label('Keterangan Tambahan')
                             ->columnSpanFull() // Memastikan textarea mengambil lebar penuh

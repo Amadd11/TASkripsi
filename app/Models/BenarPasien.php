@@ -50,7 +50,6 @@ class BenarPasien extends Model
         'is_nama' => 'boolean',
         'is_tgl_lahir' => 'boolean',
         'tanggal' => 'date', // Mengubah ke tipe date
-        'jam' => 'time',     // Casting ke 'time' untuk kolom TIME di MySQL
     ];
 
     // --- Relasi ---

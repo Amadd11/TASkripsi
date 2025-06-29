@@ -9,6 +9,8 @@ use App\Models\BenarWaktu;
 use Filament\Tables\Table;
 use App\Models\MasterPasien;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Fieldset; // Import Fieldset
+use Filament\Tables\Filters\TernaryFilter; // Import TernaryFilter
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BenarWaktuResource\Pages;
@@ -36,7 +38,7 @@ class BenarWaktuResource extends Resource
                         Forms\Components\Select::make('no_cm')
                             ->label('Nomor Rekam Medis Pasien')
                             ->relationship('masterPasien', 'no_cm')
-                            ->getOptionLabelFromRecordUsing(fn(MasterPasien $record) => "{$record->no_cm} - {$record->nama_pas}") // Menampilkan No. CM dan Nama Pasien
+                            ->getOptionLabelFromRecordUsing(fn(MasterPasien $record) => "{$record->no_cm} - {$record->nama_pas}")
                             ->searchable()
                             ->preload()
                             ->live()
@@ -52,34 +54,50 @@ class BenarWaktuResource extends Resource
                             })
                             ->helperText('Pilih nomor rekam medis pasien yang sudah terdaftar.'),
                         Forms\Components\TextInput::make('no_reg')
-                            ->label('Nomor Registrasi Transaksi Farmasi')
+                            ->label('Nomor Registrasi')
                             ->disabled(),
+                        Fieldset::make('Verifikasi Waktu Pemberian')
+                            ->schema([
+                                Forms\Components\Toggle::make('is_pagi')
+                                    ->label('Pagi')
+                                    ->hint('Centang jika pemberian sesuai waktu pagi.')
+                                    ->required(),
+                                Forms\Components\Toggle::make('is_siang')
+                                    ->label('Siang')
+                                    ->hint('Centang jika pemberian sesuai waktu siang.')
+                                    ->required(),
+                                Forms\Components\Toggle::make('is_sore')
+                                    ->label('Sore')
+                                    ->hint('Centang jika pemberian sesuai waktu sore.')
+                                    ->required(),
+                                Forms\Components\Toggle::make('is_malam')
+                                    ->label('Malam')
+                                    ->hint('Centang jika pemberian sesuai waktu malam.')
+                                    ->required(),
+                            ])->columns(1),
+                        Forms\Components\DatePicker::make('tanggal')
+                            ->label('Tanggal')
+                            ->native(false)
+                            ->required(),
+                        Forms\Components\TimePicker::make('jam')
+                            ->label('Jam')
+                            ->required(),
+                        Forms\Components\TextInput::make('id_petugas')
+                            ->label('ID Petugas')
+                            ->minValue(0)
+                            ->numeric()
+                            ->helperText('ID petugas yang bertanggung jawab.'),
                         Forms\Components\TextInput::make('is_no_reg')
                             ->label('Nomor Registrasi Internal')
                             ->numeric()
-                            ->default(0),
-                        Forms\Components\DatePicker::make('tanggal')
-                            ->label('Tanggal'), // Label form dalam Bahasa Indonesia
-                        Forms\Components\TimePicker::make('jam')
-                            ->label('Jam'), // Label form dalam Bahasa Indonesia
-                        Forms\Components\TextInput::make('id_petugas')
-                            ->label('ID Petugas') // Label form dalam Bahasa Indonesia
-                            ->numeric(),
-                        Forms\Components\Toggle::make('is_pagi')
-                            ->label('Apakah Pagi?')
-                            ->required(),
-                        Forms\Components\Toggle::make('is_siang')
-                            ->label('Apakah Siang?')
-                            ->required(),
-                        Forms\Components\Toggle::make('is_sore')
-                            ->label('Apakah Sore?')
-                            ->required(),
-                        Forms\Components\Toggle::make('is_malam')
-                            ->label('Apakah Malam?')
-                            ->required(),
+                            ->default(0)
+                            ->minValue(0)
+                            ->helperText('Nomor registrasi internal untuk pencatatan.'),
                         Forms\Components\Textarea::make('keterangan')
-                            ->label('Keterangan') // Label form dalam Bahasa Indonesia
-                            ->columnSpanFull(),
+                            ->label('Keterangan')
+                            ->columnSpanFull()
+                            ->placeholder('Masukkan keterangan tambahan terkait waktu pemberian.')
+                            ->rows(3),
                     ])->columns(2),
             ]);
     }
@@ -98,32 +116,28 @@ class BenarWaktuResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_pagi')
                     ->label('Pagi')
-                    ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->boolean(),
                 Tables\Columns\IconColumn::make('is_siang')
                     ->label('Siang')
-                    ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->boolean(),
                 Tables\Columns\IconColumn::make('is_sore')
                     ->label('Sore')
-                    ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->boolean(),
                 Tables\Columns\IconColumn::make('is_malam')
                     ->label('Malam')
-                    ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('is_no_reg')
                     ->label('No. Reg Internal')
                     ->numeric()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false), // Default disembunyikan di tabel
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->label('Tanggal')
-                    ->date('d M Y') // Format tanggal lebih mudah dibaca
+                    ->date('d M Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jam')
                     ->label('Jam')
-                    ->time('H:i') // Format jam lebih mudah dibaca
+                    ->time('H:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('id_petugas')
                     ->label('ID Petugas')
@@ -132,19 +146,28 @@ class BenarWaktuResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('keterangan')
                     ->label('Keterangan')
-                    ->limit(50) // Batasi panjang teks untuk tampilan tabel
+                    ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Dibuat Pada')
+                    ->dateTime('d M Y H:i:s')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Diperbarui Pada')
+                    ->dateTime('d M Y H:i:s')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                TernaryFilter::make('is_pagi')
+                    ->label('Filter Waktu Pagi'),
+                TernaryFilter::make('is_siang')
+                    ->label('Filter Waktu Siang'),
+                TernaryFilter::make('is_sore')
+                    ->label('Filter Waktu Sore'),
+                TernaryFilter::make('is_malam')
+                    ->label('Filter Waktu Malam'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

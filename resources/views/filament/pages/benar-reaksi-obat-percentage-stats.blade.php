@@ -28,28 +28,33 @@
             <div class="grid grid-cols-1 gap-6 mt-6 text-center md:grid-cols-3">
                 {{-- Stat Oral --}}
                 <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Oral</div>
-                    <div class="mt-1 text-3xl font-semibold text-primary-600 dark:text-primary-500">{{ $oral_percent }}%
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Alergi</div>
+                    <div class="mt-1 text-3xl font-semibold text-primary-600 dark:text-primary-500">
+                        {{ $alergi_percent }}%
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $is_oral }} dari {{ $total }}
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $is_alergi }} dari {{ $total }}
                         data</div>
                 </div>
 
                 {{-- Stat Intravena --}}
                 <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Intravena (IV)</div>
-                    <div class="mt-1 text-3xl font-semibold text-primary-600 dark:text-primary-500">{{ $iv_percent }}%
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Efek Samping (IV)</div>
+                    <div class="mt-1 text-3xl font-semibold text-primary-600 dark:text-primary-500">
+                        {{ $efek_samping_percent }}%
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $is_iv }} dari {{ $total }}
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $is_efek_samping }} dari
+                        {{ $total }}
                         data</div>
                 </div>
 
                 {{-- Stat Intramuskular --}}
                 <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Intramuskular (IM)</div>
-                    <div class="mt-1 text-3xl font-semibold text-primary-600 dark:text-primary-500">{{ $im_percent }}%
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Efek Terapi (IM)</div>
+                    <div class="mt-1 text-3xl font-semibold text-primary-600 dark:text-primary-500">
+                        {{ $efek_terapi_percent }}%
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $is_im }} dari {{ $total }}
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $is_efek_terapi }} dari
+                        {{ $total }}
                         data</div>
                 </div>
             </div>

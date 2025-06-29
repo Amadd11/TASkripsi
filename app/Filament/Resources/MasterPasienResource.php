@@ -2,17 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MasterPasienResource\Pages;
-use App\Filament\Resources\MasterPasienResource\RelationManagers;
-use App\Models\MasterPasien;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\MasterPasien;
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MasterPasienResource\Pages;
 use Filament\Forms\Components\TimePicker; // Import TimePicker
+use App\Filament\Resources\MasterPasienResource\RelationManagers;
 
 class MasterPasienResource extends Resource
 {
@@ -465,370 +468,133 @@ class MasterPasienResource extends Resource
     {
         return $table
             ->columns([
+                // == KOLOM UTAMA YANG SELALU TAMPIL ==
+                // Kolom-kolom ini adalah yang paling penting untuk identifikasi cepat.
+
                 Tables\Columns\TextColumn::make('no_cm')
                     ->label('No. CM')
                     ->searchable()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('nama_pas')
                     ->label('Nama Pasien')
                     ->searchable()
+                    ->limit(30) // Batasi panjang nama agar rapi
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tgl_lahir')
-                    ->label('Tgl Lahir')
-                    ->date('d/m/Y') // Format tanggal
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('sex')
-                    ->label('JK')
-                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('no_reg')
                     ->label('No. Registrasi')
                     ->searchable()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('tgl_kunj')
                     ->label('Tgl Kunjungan')
-                    ->dateTime('d/m/Y H:i') // Format tanggal dan waktu
+                    ->dateTime('d M Y H:i') // Format lebih jelas
                     ->sortable(),
-                Tables\Columns\TextColumn::make('alamat')
-                    ->label('Alamat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('telp')
-                    ->label('Telp')
-                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('unit')
+                    ->label('Unit/Poli')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false), // Tampil secara default
+
                 Tables\Columns\TextColumn::make('asuransi')
                     ->label('Asuransi')
+                    ->searchable()
+                    ->badge() // Tampilkan sebagai badge agar menarik
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('sex')
+                    ->label('JK')
                     ->searchable(),
 
-                // Kolom Waktu (diubah ke time() jika model sudah cast ke H:i:s)
-                Tables\Columns\TextColumn::make('jam')
-                    ->label('Jam Kunjungan')
-                    ->time('H:i:s') // Tampilkan sebagai waktu
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('jam1')
-                    ->label('Jam Kunjungan 1')
-                    ->time('H:i:s')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('jam2')
-                    ->label('Jam Kunjungan 2')
-                    ->time('H:i:s')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('jam_pl')
-                    ->label('Jam Pulang')
-                    ->time('H:i:s')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('jam_inap')
-                    ->label('Jam Inap')
-                    ->searchable(),
 
-                // Kolom Boolean (IconColumn)
-                Tables\Columns\IconColumn::make('cek_kpsta')
-                    ->label('Cek KPSTA')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('cek_ktp')
-                    ->label('Cek KTP')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('cek_kk')
-                    ->label('Cek KK')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('bank_v_lab')
-                    ->label('Bank V Lab')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('bank_v_far')
-                    ->label('Bank V Far')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('bank_v_rad')
-                    ->label('Bank V Rad')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('bank_v_gz')
-                    ->label('Bank V GZ')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('bank_v_fis')
-                    ->label('Bank V Fis')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('flag_mcu')
-                    ->label('Flag MCU')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('flag_penyakit')
-                    ->label('Flag Penyakit')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('flag_pasien')
-                    ->label('Flag Pasien')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('flag_prolanis')
-                    ->label('Flag Prolanis')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_hiv')
-                    ->label('HIV')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_hbs')
-                    ->label('HBS')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_tbc')
-                    ->label('TBC')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_pulang')
-                    ->label('Pulang')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_titip')
-                    ->label('Titip')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_farmasi')
-                    ->label('Farmasi')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_radiologi')
-                    ->label('Radiologi')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_laboratorium')
-                    ->label('Laboratorium')
-                    ->boolean(),
+                // == KOLOM TAMBAHAN (DISEMBUNYIKAN SECARA DEFAULT) ==
+                // Kolom ini dapat dimunculkan oleh pengguna jika diperlukan.
 
-                // Kolom lainnya, diatur agar bisa di-toggle atau disembunyikan secara default
-                Tables\Columns\TextColumn::make('iol')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kec')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('nama_ortu')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('pek_pasien')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('pek_ortu')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('alm_ortu')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kelas')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('unit')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('pend')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('agama')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('diagnosa')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('bl')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('identitas')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('pengirim')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('gol')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('gawat')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('al_kir')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('nama_peng')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('pin')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('tgl_kunj1')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('tgl_lahir')
+                    ->label('Tgl Lahir')
+                    ->date('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('tgl_kunj2')
-                    ->dateTime()
-                    ->sortable()
+
+                Tables\Columns\TextColumn::make('alamat')
+                    ->label('Alamat')
+                    ->searchable()
+                    ->limit(40)
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('desa')
+
+                Tables\Columns\TextColumn::make('telp')
+                    ->label('Telp')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kls1')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kls2')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kkk')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kdu')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('hub')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kab')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('aktif')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('no_px')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('petugas_tpp')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('dokter')
+                    ->label('Dokter')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('perawat')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('tgl_pl')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('bbbb')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kd_dx')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('waktu')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('telp_ortu')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('kunjungan')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('cara_masuk')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('polisi')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('ruang')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('tgl_inap')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('status_kary')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('gzresp')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('cek')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('id_menikah')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('id_propinsi')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('no_kpsta')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('asal_daerah')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('id_retensi')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('id_alergi')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('fis_asuhan')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('catatan_bpjs')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('nik')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('flag_status')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('paraf')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('id_prop_domisili')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('id_kab_domisili')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('id_kec_domisili')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('id_desa_domisili')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('alamat_domisili')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('lokasi_domisili')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('ihs')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('reg_sitb')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('no_sep')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('ihs_labmu')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('tempat')
-                    ->searchable()
+
+                Tables\Columns\IconColumn::make('is_pulang')
+                    ->label('Sudah Pulang')
+                    ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
             ])
             ->filters([
-                // Anda bisa menambahkan filter di sini, contoh:
-                // Tables\Filters\SelectFilter::make('sex')
-                //     ->options([
-                //         'L' => 'Laki-laki',
-                //         'P' => 'Perempuan',
-                //     ])
-                //     ->label('Jenis Kelamin'),
-                // Tables\Filters\TrashedFilter::make(), // Jika Anda menggunakan Soft Deletes
+                Filter::make('tgl_kunj')
+                    ->form([
+                        DatePicker::make('created_from')->label('Dari Tanggal'),
+                        DatePicker::make('created_until')->label('Sampai Tanggal'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('tgl_kunj', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('tgl_kunj', '<=', $date),
+                            );
+                    }),
+
+                // Filter berdasarkan jenis asuransi
+                SelectFilter::make('asuransi')
+                    ->options([
+                        'BPJS' => 'BPJS',
+                        'UMUM' => 'Umum',
+                        // Tambahkan opsi lain jika ada
+                    ])
+                    ->label('Asuransi'),
+
+                // Filter berdasarkan jenis kelamin
+                SelectFilter::make('sex')
+                    ->options([
+                        'L' => 'Laki-laki',
+                        'P' => 'Perempuan',
+                    ])
+                    ->label('Jenis Kelamin'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(), // Tambahkan View Action untuk melihat detail
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    // Jika menggunakan SoftDeletes, Anda bisa menambahkan ForceDelete dan Restore bulk actions
+                    // Tables\Actions\ForceDeleteBulkAction::make(),
+                    // Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }

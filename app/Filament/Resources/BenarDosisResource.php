@@ -66,13 +66,16 @@ class BenarDosisResource extends Resource
                             ])->columns(1),
                         Forms\Components\DatePicker::make('tanggal')
                             ->label('Tanggal')
+                            ->native(false)
                             ->required(),
                         Forms\Components\TimePicker::make('jam')
                             ->label('Jam')
                             ->required(),
                         Forms\Components\TextInput::make('id_petugas')
                             ->label('ID Petugas')
-                            ->numeric(),
+                            ->minValue(0)
+                            ->numeric()
+                            ->helperText('ID petugas yang bertanggung jawab.'),
                         Forms\Components\TextInput::make('is_no_reg')
                             ->label('Nomor Registrasi Internal')
                             ->numeric()
@@ -81,6 +84,7 @@ class BenarDosisResource extends Resource
                             ->helperText('Nomor registrasi internal untuk pencatatan.'),
                         Forms\Components\Textarea::make('keterangan')
                             ->columnSpanFull()
+                            ->placeholder('Masukkan keterangan tambahan terkait dosis yang diberikan.')
                             ->rows(3),
 
                     ])->columns(2),

@@ -3,31 +3,33 @@
 namespace App\Filament\Widgets\PersentaseKepatuhan;
 
 use Carbon\Carbon;
-use App\Models\BenarCara;
+use App\Filament\Resources\BenarWaktuResource\Pages\ListBenarWaktus;
+use App\Models\BenarWaktu;
 use Filament\Widgets\Widget;
-use App\Filament\Resources\BenarCaraResource\Pages\ListBenarCaras;
 
-class BenarCaraPercentageStats extends Widget
+class BenarWaktuPercentageStats extends Widget
 {
     // Tentukan file view yang akan digunakan
-    protected static string $view = 'filament.pages.benar-cara-percentage-stats';
+    protected static string $view = 'filament.pages.benar-waktu-percentage-stats';
     protected int | string | array $columnSpan = 'full';
 
-    // Properti untuk menyimpan nilai filter yang dipilih
+    // Properti untuk menyjumlahpan nilai filter yang dipilih
     public ?string $filter = null;
 
-    // Properti untuk menyimpan data yang akan ditampilkan di view
+    // Properti untuk menyjumlahpan data yang akan ditampilkan di view
     public int $total = 0;
-    public int $is_oral = 0;
-    public int $is_iv = 0;
-    public int $is_im = 0;
-    public float $oral_percent = 0.0;
-    public float $iv_percent = 0.0;
-    public float $im_percent = 0.0;
+    public int $is_pagi = 0;
+    public int $is_siang = 0;
+    public int $is_sore = 0;
+    public int $is_malam = 0;
+    public float $pagi_percent = 0.0;
+    public float $siang_percent = 0.0;
+    public float $sore_percent = 0.0;
+    public float $malam_percent = 0.0;
     public array $monthsOptions = [];
 
     /**
-     * Dijalankan saat widget pertama kali dimuat.
+     * Dijalankan saat widget pertama kali djumlahuat.
      */
     public function mount(): void
     {
@@ -57,18 +59,20 @@ class BenarCaraPercentageStats extends Widget
         $month = Carbon::parse($this->filter)->month;
 
         // Query dasar yang memfilter berdasarkan bulan dan tahun dari kolom 'tanggal'
-        $query = BenarCara::query()
+        $query = BenarWaktu::query()
             ->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month);
 
         $this->total = $query->count();
-        $this->is_oral = (clone $query)->where('is_oral', true)->count();
-        $this->is_iv = (clone $query)->where('is_iv', true)->count();
-        $this->is_im = (clone $query)->where('is_im', true)->count();
+        $this->is_pagi = (clone $query)->where('is_pagi', true)->count();
+        $this->is_siang = (clone $query)->where('is_siang', true)->count();
+        $this->is_sore = (clone $query)->where('is_sore', true)->count();
+        $this->is_malam = (clone $query)->where('is_malam', true)->count();
 
-        $this->oral_percent = $this->total ? round(($this->is_oral / $this->total) * 100, 1) : 0;
-        $this->iv_percent = $this->total ? round(($this->is_iv / $this->total) * 100, 1) : 0;
-        $this->im_percent = $this->total ? round(($this->is_im / $this->total) * 100, 1) : 0;
+        $this->pagi_percent = $this->total ? round(($this->is_pagi / $this->total) * 100, 1) : 0;
+        $this->siang_percent = $this->total ? round(($this->is_siang / $this->total) * 100, 1) : 0;
+        $this->sore_percent = $this->total ? round(($this->is_sore / $this->total) * 100, 1) : 0;
+        $this->malam_percent = $this->total ? round(($this->is_malam / $this->total) * 100, 1) : 0;
     }
 
     /**
@@ -85,6 +89,6 @@ class BenarCaraPercentageStats extends Widget
 
     public static function canView(): bool
     {
-        return request()->route()?->getName() === ListBenarCaras::getRouteName();
+        return request()->route()?->getName() === ListBenarWaktus::getRouteName();
     }
 }

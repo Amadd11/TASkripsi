@@ -5,8 +5,7 @@ namespace App\Filament\Resources\BenarCaraResource\Pages;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\BenarCaraResource;
-use App\Filament\Widgets\BenarCaraPercentageStats;
-use App\Filament\Widgets\PersentaseKepatuhan\BenarCaraPercentageStats as PersentaseKepatuhanBenarCaraPercentageStats;
+use App\Filament\Widgets\PersentaseKepatuhan\BenarCaraPercentageStats;
 
 class ListBenarCaras extends ListRecords
 {
@@ -22,7 +21,7 @@ class ListBenarCaras extends ListRecords
     protected function getFooterWidgets(): array
     {
         return [
-            PersentaseKepatuhanBenarCaraPercentageStats::class,
+            BenarCaraPercentageStats::class,
         ];
     }
 }

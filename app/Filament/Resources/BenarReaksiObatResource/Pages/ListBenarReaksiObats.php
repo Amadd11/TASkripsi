@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BenarReaksiObatResource\Pages;
 
 use App\Filament\Resources\BenarReaksiObatResource;
+use App\Filament\Widgets\PersentaseKepatuhan\BenarReaksiObatPercentageStats;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,12 @@ class ListBenarReaksiObats extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+     protected function getFooterWidgets(): array
+    {
+        return [
+            BenarReaksiObatPercentageStats::class
         ];
     }
 }

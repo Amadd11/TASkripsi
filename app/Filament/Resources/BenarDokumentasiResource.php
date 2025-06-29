@@ -75,25 +75,27 @@ class BenarDokumentasiResource extends Resource
                                     ->hint('Centang jika rute pemberian didokumentasikan dengan benar.')
                                     ->required(),
                             ])->columns(1),
-                        Forms\Components\TextInput::make('is_no_reg')
-                            ->label('Nomor Registrasi Internal')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->helperText('Nomor registrasi internal untuk pencatatan.'),
                         Forms\Components\DatePicker::make('tanggal')
                             ->label('Tanggal')
+                            ->native(false)
                             ->required(),
                         Forms\Components\TimePicker::make('jam')
                             ->label('Jam')
                             ->required(),
                         Forms\Components\TextInput::make('id_petugas')
                             ->label('ID Petugas')
+                            ->minValue(0)
                             ->numeric()
-                            ->nullable()
-                            ->helperText('ID petugas yang melakukan dokumentasi.'),             // Mengelompokkan Toggles untuk penampilan yang rapi
+                            ->helperText('ID petugas yang bertanggung jawab.'),
+                        Forms\Components\TextInput::make('is_no_reg')
+                            ->label('Nomor Registrasi Internal')
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->helperText('Nomor registrasi internal untuk pencatatan.'),
                         Forms\Components\Textarea::make('keterangan')
                             ->label('Keterangan Tambahan')
+                            ->placeholder('Masukkan keterangan tambahan terkait verifikasi dokumentasi.')
                             ->columnSpanFull()
                             ->rows(3),
                     ])->columns(2),

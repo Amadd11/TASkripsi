@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BenarPasienResource\Pages;
 
 use App\Filament\Resources\BenarPasienResource;
+use App\Filament\Widgets\PersentaseKepatuhan\BenarPasienPercentageStats;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListBenarPasiens extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            BenarPasienPercentageStats::class
         ];
     }
 }
