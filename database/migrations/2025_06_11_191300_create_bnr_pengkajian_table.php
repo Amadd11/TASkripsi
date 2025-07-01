@@ -24,7 +24,6 @@ return new class extends Migration
             $table->char('no_cm', 8)->nullable();
             $table->timestamps();
             // Foreign Keys
-            $table->foreign('no_reg')->references('no_reg')->on('far_transactions')->onDelete('set null');
             $table->foreign('no_cm')->references('no_cm')->on('master_pasien')->onDelete('set null');
         });
     }

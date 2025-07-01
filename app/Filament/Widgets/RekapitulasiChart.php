@@ -21,17 +21,39 @@ use App\Filament\Pages\RekapitulasiChartPage;
 
 class RekapitulasiChart extends ChartWidget
 {
-    protected static ?string $heading = 'Rekapitulasi Kepatuhan 12 Benar (Tahun Terpilih)';
+    // Heading sekarang diatur secara dinamis, jadi kita komentari ini.
+    // protected static ?string $heading = 'Rekapitulasi Kepatuhan 12 Benar (Tahun Terpilih)';
 
     protected static ?int $sort = 11;
     protected static ?string $maxHeight = '300px';
 
-
+    // Properti untuk filter. Formatnya adalah 'Y-m'.
     public ?string $filter = null;
 
+    public function getColumnSpan(): int | string | array
+    {
+        return 'full';
+    }
+    
     public static function canView(): bool
     {
         return request()->route()?->getName() === RekapitulasiChartPage::getRouteName();
+    }
+
+    public function mount(): void
+    {
+        // Atur filter default ke bulan ini saat widget dimuat
+        $this->filter = now()->format('Y-m');
+    }
+
+    public function getHeading(): ?string
+    {
+        if (!$this->filter) {
+            return null;
+        }
+
+        $selectedDate = Carbon::createFromFormat('Y-m', $this->filter);
+        return 'Rekapitulasi Kepatuhan 12 Benar - ' . $selectedDate->translatedFormat('F Y');
     }
 
     protected function getType(): string
@@ -39,25 +61,32 @@ class RekapitulasiChart extends ChartWidget
         return 'bar';
     }
 
+    /**
+     * DIUBAH: Filter sekarang menghasilkan daftar bulan, bukan tahun.
+     */
     protected function getFilters(): ?array
     {
-        $years = [];
-        for ($i = 0; $i < 5; $i++) {
-            $year = now()->subYears($i)->format('Y');
-            $years[$year] = $year;
+        $months = [];
+        for ($i = 0; $i < 12; $i++) { // Tampilkan 12 bulan terakhir
+            $date = now()->subMonths($i);
+            $months[$date->format('Y-m')] = $date->translatedFormat('F Y');
         }
-        return $years;
+        return $months;
     }
 
     protected function getData(): array
     {
-        $year = $this->filter ?? now()->format('Y');
-        $start = Carbon::parse("$year-01-01")->startOfYear();
-        $end = Carbon::parse("$year-12-31")->endOfYear();
+        // DIUBAH: Gunakan filter bulan untuk menentukan rentang tanggal
+        $yearMonth = $this->filter ?? now()->format('Y-m');
+        $selectedDate = Carbon::createFromFormat('Y-m', $yearMonth);
+
+        $start = $selectedDate->copy()->startOfMonth();
+        $end = $selectedDate->copy()->endOfMonth();
 
         $calculatePercentage = fn($true, $total) => $total > 0 ? round(($true / $total) * 100, 2) : 0;
 
         $categories = [
+            // ... (array kategori Anda tidak perlu diubah)
             [
                 'label' => 'Benar Cara',
                 'model' => BenarCara::class,
@@ -123,12 +152,12 @@ class RekapitulasiChart extends ChartWidget
         $labels = [];
         $data = [];
         $colors = [];
-        // PERUBAHAN 1: Buat array untuk menyimpan jumlah data yang patuh
         $compliantCounts = [];
 
         foreach ($categories as $category) {
             $labels[] = $category['label'];
 
+            // Query akan menggunakan rentang tanggal bulanan dari variabel $start dan $end
             $query = $category['model']::whereBetween('tanggal', [$start, $end]);
             $total = $query->count();
 
@@ -140,18 +169,15 @@ class RekapitulasiChart extends ChartWidget
             $percentage = $calculatePercentage($compliant, $total);
 
             $data[] = $percentage;
-            // PERUBAHAN 2: Simpan jumlah data yang patuh
             $compliantCounts[] = $compliant;
 
-            // Logika pewarnaan sudah benar sesuai permintaan Anda
             $colors[] = match (true) {
-                $percentage >= 80 => '#10B981',   // Hijau: 80% - 100%
-                $percentage >= 50 => '#FACC15',   // Kuning: 50% - 79%
-                default            => '#EF4444',   // Merah: < 50%
+                $percentage >= 80 => '#10B981',   // Hijau
+                $percentage >= 50 => '#FACC15',   // Kuning
+                default            => '#EF4444',   // Merah
             };
         }
 
-        // PERUBAHAN 3: Encode array jumlah data ke format JSON untuk digunakan di JavaScript
         $compliantCountsJson = json_encode($compliantCounts);
 
         return [
@@ -165,32 +191,22 @@ class RekapitulasiChart extends ChartWidget
                     'borderWidth' => 1,
                 ],
             ],
-            'options' => [
+            'options' => [ // Bagian options tetap sama
                 'responsive' => true,
                 'scales' => [
-                    'y' => [
-                        'beginAtZero' => true,
-                        'max' => 100,
-                    ],
-                    'x' => [
-                        'ticks' => [
-                            'autoSkip' => false,
-                        ],
-                    ],
+                    'y' => ['beginAtZero' => true, 'max' => 100],
+                    'x' => ['ticks' => ['autoSkip' => false]],
                 ],
                 'plugins' => [
                     'tooltip' => [
                         'callbacks' => [
-                            // PERUBAHAN 4: Modifikasi fungsi callback untuk tooltip
                             'label' => "function(context) {
                                 const compliantData = {$compliantCountsJson};
                                 const count = compliantData[context.dataIndex];
                                 let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
+                                if (label) { label += ': '; }
                                 if (context.parsed.y !== null) {
-                                    label += context.parsed.y + '% - ' + count + ' Pasien';
+                                    label += context.parsed.y + '% (' + count + ' Pasien Patuh)';
                                 }
                                 return label;
                             }",
@@ -199,9 +215,5 @@ class RekapitulasiChart extends ChartWidget
                 ],
             ],
         ];
-    }
-    public function getColumnSpan(): int | string | array
-    {
-        return 'full';
     }
 }

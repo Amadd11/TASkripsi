@@ -25,7 +25,6 @@ return new class extends Migration
             $table->boolean('is_im')->default(0); // Diubah dari int ke boolean
             $table->timestamps();
             // Foreign Keys
-            $table->foreign('no_reg')->references('no_reg')->on('far_transactions')->onDelete('set null');
             $table->foreign('no_cm')->references('no_cm')->on('master_pasien')->onDelete('set null');
         });
     }

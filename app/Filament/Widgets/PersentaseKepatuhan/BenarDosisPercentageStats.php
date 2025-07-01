@@ -18,8 +18,10 @@ class BenarDosisPercentageStats extends Widget
 
     // Properti untuk menyjumlahpan data yang akan ditampilkan di view
     public int $total = 0;
+    public int $is_oral = 0;
     public int $is_potensi = 0;
     public int $is_jumlah = 0;
+    public float $oral_percent = 0.0;
     public float $potensi_percent = 0.0;
     public float $jumlah_percent = 0.0;
     public array $monthsOptions = [];
@@ -63,6 +65,7 @@ class BenarDosisPercentageStats extends Widget
         $this->is_potensi = (clone $query)->where('is_potensi', true)->count();
         $this->is_jumlah = (clone $query)->where('is_jumlah', true)->count();
 
+        $this->oral_percent = $this->total ? round(($this->is_oral / $this->total) * 100, 1) : 0;
         $this->potensi_percent = $this->total ? round(($this->is_potensi / $this->total) * 100, 1) : 0;
         $this->jumlah_percent = $this->total ? round(($this->is_jumlah / $this->total) * 100, 1) : 0;
     }

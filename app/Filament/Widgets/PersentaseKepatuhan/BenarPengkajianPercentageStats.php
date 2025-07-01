@@ -64,7 +64,7 @@ class BenarPengkajianPercentageStats extends Widget
         $this->is_tensi = (clone $query)->where('is_tensi', true)->count();
 
         $this->suhu_percent = $this->total ? round(($this->is_suhu / $this->total) * 100, 1) : 0;
-        $this->tensi_percent = $this->total ? round(($this->tensi_percent / $this->total) * 100, 1) : 0;
+        $this->tensi_percent = $this->total ? round(($this->is_tensi / $this->total) * 100, 1) : 0;
     }
 
     /**

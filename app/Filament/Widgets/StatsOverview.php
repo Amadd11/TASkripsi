@@ -15,10 +15,10 @@ class StatsOverview extends BaseWidget
         $totalPasien = MasterPasien::count();
         $totalTransaksiFarmasi = FarTransaction::count();
 
-        // Ambil total pendapatan bulan ini
-        $pendapatanBulanIni = FarTransaction::whereBetween('tgl', [
-            Carbon::now()->startOfMonth(),
-            Carbon::now()->endOfMonth()
+        // Pendapatan dari transaksi tahun ini
+        $pendapatanTahunIni = FarTransaction::whereBetween('tgl', [
+            Carbon::now()->startOfYear(),
+            Carbon::now()->endOfYear()
         ])->sum('grand_total');
 
         return [
@@ -32,8 +32,8 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-o-shopping-bag')
                 ->color('success'),
 
-            Stat::make('Pendapatan Farmasi Bulan Ini', 'Rp ' . number_format($pendapatanBulanIni, 0, ',', '.'))
-                ->description('Pendapatan dari transaksi bulan ini')
+            Stat::make('Pendapatan Farmasi Tahun Ini', 'Rp ' . number_format($pendapatanTahunIni, 0, ',', '.'))
+                ->description('Total pendapatan transaksi tahun berjalan')
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('warning'),
         ];
