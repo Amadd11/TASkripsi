@@ -34,11 +34,12 @@ class RekapitulasiChart extends ChartWidget
     {
         return 'full';
     }
-    
+
     public static function canView(): bool
     {
         return request()->route()?->getName() === RekapitulasiChartPage::getRouteName();
     }
+    
 
     public function mount(): void
     {

@@ -19,9 +19,9 @@ class BenarPasienResource extends Resource
     protected static ?string $model = BenarPasien::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
     protected static ?string $pluralModelLabel = 'Benar Pasien';
     protected static ?string $modelLabel = 'Benar Pasien';
+
 
     public static function form(Form $form): Form
     {
@@ -94,6 +94,7 @@ class BenarPasienResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('masterPasien.no_cm')
                     ->label('No. CM Pasien')

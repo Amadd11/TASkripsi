@@ -20,9 +20,9 @@ class BenarDosisResource extends Resource
     protected static ?string $model = BenarDosis::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-adjustments-vertical';
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
     protected static ?string $pluralModelLabel = 'Benar Dosis';
     protected static ?string $modelLabel = 'Benar Dosis';
+
 
 
     public static function form(Form $form): Form
@@ -104,10 +104,10 @@ class BenarDosisResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_jumlah')
-                    ->label('Jumlah Benar')
+                    ->label('Benar Jumlah Dosis')
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_potensi')
-                    ->label('Potensi Benar')
+                    ->label('Benar Potensi Obat')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('is_no_reg')
                     ->label('No. Reg Internal')

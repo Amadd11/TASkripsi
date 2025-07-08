@@ -13,11 +13,9 @@ class ListBenarReaksiObats extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return [];
     }
-     protected function getFooterWidgets(): array
+    protected function getFooterWidgets(): array
     {
         return [
             BenarReaksiObatPercentageStats::class

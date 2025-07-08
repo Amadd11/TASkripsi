@@ -35,6 +35,7 @@ class BenarPasien extends Model
         'is_tgl_lahir',
         'is_no_reg',
         'tanggal',
+        'jam',
         'id_petugas',
         'keterangan',
         'no_reg', // Foreign key

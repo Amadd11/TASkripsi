@@ -19,7 +19,6 @@ class BenarDokumentasiResource extends Resource
     protected static ?string $model = BenarDokumentasi::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
     protected static ?string $pluralModelLabel = 'Benar Dokumentasi';
     protected static ?string $modelLabel = 'Benar Dokumentasi';
 

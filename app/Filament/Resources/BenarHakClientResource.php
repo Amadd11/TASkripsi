@@ -19,9 +19,10 @@ class BenarHakClientResource extends Resource
     protected static ?string $model = BenarHakClient::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text'; // Ikon navigasi yang relevan (misal: untuk informed consent)
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
     protected static ?string $pluralModelLabel = 'Benar Hak Client';
     protected static ?string $modelLabel = 'Benar Hak Client';
+
+
 
     public static function form(Form $form): Form
     {

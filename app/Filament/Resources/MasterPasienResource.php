@@ -23,6 +23,10 @@ class MasterPasienResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
+    protected static ?string $pluralModelLabel = 'Master Pasien';
+
+    protected static ?string $modelLabel = 'Master Pasien';
+
     public static function form(Form $form): Form
     {
         return $form

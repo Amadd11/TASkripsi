@@ -23,9 +23,13 @@ class BenarCaraResource extends Resource
     protected static ?string $model = BenarCara::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
-    protected static ?string $pluralModelLabel = 'Benar Cara';
-    protected static ?string $modelLabel = 'Benar Cara';
+
+    protected static ?string $pluralModelLabel = 'Benar Cara Pemberian';
+
+    protected static ?string $modelLabel = 'Benar Cara Pemberian';
+
+
+
 
     public static function form(Form $form): Form
     {
@@ -72,24 +76,6 @@ class BenarCaraResource extends Resource
                                     ->hint('Centang jika cara pemberian adalah intramuskular (melalui otot).')
                                     ->required(),
                             ])->columns(1),
-                        Forms\Components\DatePicker::make('tanggal')
-                            ->label('Tanggal')
-                            ->native(false)
-                            ->required(),
-                        Forms\Components\TimePicker::make('jam')
-                            ->label('Jam')
-                            ->required(),
-                        Forms\Components\TextInput::make('id_petugas')
-                            ->label('ID Petugas')
-                            ->minValue(0)
-                            ->numeric()
-                            ->helperText('ID petugas yang bertanggung jawab.'),
-                        Forms\Components\TextInput::make('is_no_reg')
-                            ->label('Nomor Registrasi Internal')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->helperText('Nomor registrasi internal untuk pencatatan.'),
                         Forms\Components\Textarea::make('keterangan')
                             ->label('Keterangan Tambahan')
                             ->placeholder('Masukkan keterangan tambahan terkait cara pemberian.')

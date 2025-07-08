@@ -19,9 +19,10 @@ class BenarPendidikanResource extends Resource
     protected static ?string $model = BenarPendidikan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
     protected static ?string $pluralModelLabel = 'Benar Pendidikan';
     protected static ?string $modelLabel = 'Benar Pendidikan';
+
+
 
     public static function form(Form $form): Form
     {

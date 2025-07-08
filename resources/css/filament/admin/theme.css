@@ -1,0 +1,10 @@
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+
+@config 'tailwind.config.js';
+:root {
+    /* * Ganti nilai variabel ini dengan warna yang Anda inginkan.
+     * Anda bisa menggunakan kode hex, rgb, atau nama warna.
+     * Contoh: #2c3e50 (biru tua), #f9fafb (abu-abu sangat terang), dll.
+     */
+    --f-sidebar-bg: green;
+}

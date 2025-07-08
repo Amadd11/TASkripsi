@@ -19,9 +19,10 @@ class BenarReaksiMakananResource extends Resource
     protected static ?string $model = BenarReaksiMakanan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
     protected static ?string $pluralModelLabel = 'Benar Reaksi Makanan';
     protected static ?string $modelLabel = 'Benar Reaksi Makanan';
+
+
 
     public static function form(Form $form): Form
     {

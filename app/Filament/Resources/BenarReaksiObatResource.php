@@ -20,9 +20,10 @@ class BenarReaksiObatResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shield-exclamation';
 
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
     protected static ?string $pluralModelLabel = 'Benar Reaksi Obat';
     protected static ?string $modelLabel = 'Benar Reaksi Obat';
+
+
 
     public static function form(Form $form): Form
     {

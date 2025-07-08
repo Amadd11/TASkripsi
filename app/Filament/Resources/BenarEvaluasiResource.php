@@ -19,9 +19,10 @@ class BenarEvaluasiResource extends Resource
     protected static ?string $model = BenarEvaluasi::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
     protected static ?string $pluralModelLabel = 'Benar Evaluasi';
     protected static ?string $modelLabel = 'Benar Evaluasi';
+
+
 
     public static function form(Form $form): Form
     {

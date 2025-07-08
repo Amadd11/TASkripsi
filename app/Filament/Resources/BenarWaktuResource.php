@@ -22,11 +22,11 @@ class BenarWaktuResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
 
-    protected static ?string $navigationGroup = 'Prinsip 12 Benar';
-
     protected static ?string $pluralModelLabel = 'Benar Waktu';
 
     protected static ?string $modelLabel = 'Benar Waktu';
+
+
 
     public static function form(Form $form): Form
     {
