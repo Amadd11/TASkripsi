@@ -2,46 +2,22 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\IsiCeklist12Benar;
+use App\Filament\Pages\Auth\LoginCustom; // Pastikan nama file login kustom Anda sesuai
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use App\Filament\Pages\TentangAplikasi;
-use App\Filament\Resources\UserResource;
-use Filament\Navigation\NavigationGroup;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Navigation\NavigationBuilder;
-use App\Filament\Pages\RekapitulasiChartPage;
-use App\Filament\Resources\BenarCaraResource;
-use App\Filament\Resources\BenarObatResource;
-use App\Filament\Resources\BenarDosisResource;
-use App\Filament\Resources\BenarWaktuResource;
-use App\Filament\Resources\BenarPasienResource;
-use Illuminate\Session\Middleware\StartSession;
-use App\Filament\Resources\MasterPasienResource;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use App\Filament\Resources\BenarEvaluasiResource;
-use Filament\Http\Middleware\AuthenticateSession;
-use App\Filament\Resources\BenarHakClientResource;
-use App\Filament\Resources\FarTransactionResource;
-use App\Filament\Resources\BenarPendidikanResource;
-use App\Filament\Resources\BenarPengkajianResource;
-use App\Filament\Resources\BenarReaksiObatResource;
-use App\Filament\Resources\BenarDokumentasiResource;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
-use App\Filament\Resources\BenarReaksiMakananResource;
+use Illuminate\Session\Middleware\AuthenticateSession;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use BezhanSalleh\FilamentShield\Resources\RoleResource;
-use App\Filament\Resources\PemeriksaanKepatuhanResource;
+use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -51,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(LoginCustom::class) // Menggunakan halaman login kustom Anda
             ->colors([
                 'primary' => Color::Green,
             ])
@@ -82,51 +58,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
-                return $builder->groups([
-                    // Item tanpa grup akan muncul di paling atas
-                    NavigationGroup::make()
-                        ->items([
-                            ...Dashboard::getNavigationItems(),
-                            ...RekapitulasiChartPage::getNavigationItems(),
-                            ...FarTransactionResource::getNavigationItems(),
-                            ...MasterPasienResource::getNavigationItems(),
-                            ...IsiCeklist12Benar::getNavigationItems()
-                        ]),
-
-
-                    // Grup untuk semua prinsip 12 Benar
-                    NavigationGroup::make('Prinsip 12 Benar')
-                        ->items([
-                            ...BenarPasienResource::getNavigationItems(),
-                            ...BenarObatResource::getNavigationItems(),
-                            ...BenarDosisResource::getNavigationItems(),
-                            ...BenarCaraResource::getNavigationItems(),
-                            ...BenarWaktuResource::getNavigationItems(),
-                            ...BenarDokumentasiResource::getNavigationItems(),
-                            ...BenarEvaluasiResource::getNavigationItems(),
-                            ...BenarPengkajianResource::getNavigationItems(),
-                            ...BenarReaksiObatResource::getNavigationItems(),
-                            ...BenarReaksiMakananResource::getNavigationItems(),
-                            ...BenarHakClientResource::getNavigationItems(),
-                            ...BenarPendidikanResource::getNavigationItems(),
-                        ]),
-
-                    // Grup untuk manajemen user, diletakkan di bawah
-                    NavigationGroup::make('User Manajemen')
-                        ->items([
-                            ...UserResource::getNavigationItems(),
-                            ...RoleResource::getNavigationItems(),
-
-                        ]),
-
-                    // Grup untuk halaman statis seperti "Tentang"
-                    NavigationGroup::make('Bantuan')
-                        ->items([
-                            ...TentangAplikasi::getNavigationItems(),
-                        ]),
-                ]);
-            });
+            ]);
+            // Method ->navigation() telah dihapus untuk mengaktifkan menu otomatis
     }
 }

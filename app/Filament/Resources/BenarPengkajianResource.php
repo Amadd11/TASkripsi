@@ -21,8 +21,7 @@ class BenarPengkajianResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $pluralModelLabel = 'Benar Pengkajian';
     protected static ?string $modelLabel = 'Benar Pengkajian';
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {

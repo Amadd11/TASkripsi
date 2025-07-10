@@ -13,7 +13,9 @@ class ListBenarCaras extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Actions\CreateAction::make(),
+        ];
     }
 
     protected function getFooterWidgets(): array

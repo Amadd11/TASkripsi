@@ -22,6 +22,7 @@ use App\Models\BenarReaksiObat;
 use App\Models\BenarDokumentasi;
 use App\Models\BenarReaksiMakanan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -32,7 +33,7 @@ class IsiCeklist12Benar extends Page implements HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static string $view = 'filament.pages.isi-ceklist12-benar';
-    protected static ?string $title = 'Isi Ceklist 12 Benar';
+    protected static ?string $title = 'Ceklist 12 Benar';
     protected static ?string $navigationGroup = 'Pemeriksaan';
 
     public ?array $data = [];
@@ -292,6 +293,7 @@ class IsiCeklist12Benar extends Page implements HasForms
             $commonData = [
                 'no_cm' => $formData['no_cm'],
                 'no_reg' => $formData['no_reg'] ?? null,
+                'user_id' => Auth::id(),
                 'tanggal' => now('Asia/Jakarta')->toDateString(),
                 'jam' => now('Asia/Jakarta')->toTimeString(),
             ];

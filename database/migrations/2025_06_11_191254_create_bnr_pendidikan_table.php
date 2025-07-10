@@ -16,7 +16,7 @@ return new class extends Migration
             $table->boolean('is_edukasi')->default(0); // Diubah dari int ke boolean
             $table->date('tanggal')->nullable();
             $table->time('jam')->nullable(); // Diubah dari char(8) ke time
-            $table->integer('id_petugas')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->text('keterangan')->nullable();
             $table->char('no_reg', 8)->nullable();
             $table->char('no_cm', 8)->nullable();

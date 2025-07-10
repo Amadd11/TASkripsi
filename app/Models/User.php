@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use App\Models\MasterPetugas;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -20,8 +22,10 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'nbm',
         'email',
         'password',
+        'is_active',
     ];
 
     /**
@@ -45,5 +49,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active;
+    }
+
+    public function petugas(): HasOne
+    {
+        return $this->hasOne(MasterPetugas::class, 'user_id');
     }
 }

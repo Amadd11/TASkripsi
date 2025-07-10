@@ -36,7 +36,7 @@ class BenarPasien extends Model
         'is_no_reg',
         'tanggal',
         'jam',
-        'id_petugas',
+        'user_id',
         'keterangan',
         'no_reg', // Foreign key
         'no_cm',  // Foreign key
@@ -70,5 +70,10 @@ class BenarPasien extends Model
     {
         // Anda bisa memilih nama relasi 'pasien' atau 'masterPasien'
         return $this->belongsTo(MasterPasien::class, 'no_cm', 'no_cm');
+    }
+
+    public function petugas(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

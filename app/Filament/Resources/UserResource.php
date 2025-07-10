@@ -28,10 +28,18 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('nbm')
+                    ->label('Nomor Baku Muhammadiyah')
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('Akun Aktif')
+                    ->default(true)
+                    ->helperText('Nonaktifkan untuk memblokir akses login pengguna ini.'),
                 Forms\Components\Select::make('roles')
                     ->relationship('roles', 'name')
                     ->required(),
@@ -49,10 +57,15 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('nbm')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->searchable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('Login Aktif')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

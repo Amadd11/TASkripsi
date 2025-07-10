@@ -10,12 +10,13 @@ use Filament\Tables\Table;
 use App\Models\MasterPasien;
 use App\Models\FarTransaction;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use App\Filament\Widgets\BenarCaraStats;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Widgets\BenarHakClientStats;
 use App\Filament\Resources\BenarCaraResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BenarCaraResource\RelationManagers;
-use App\Filament\Widgets\BenarCaraStats;
-use App\Filament\Widgets\BenarHakClientStats;
 use App\Filament\Widgets\PersentaseKepatuhan\BenarCaraPercentageStats;
 
 class BenarCaraResource extends Resource
@@ -23,13 +24,9 @@ class BenarCaraResource extends Resource
     protected static ?string $model = BenarCara::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
-
     protected static ?string $pluralModelLabel = 'Benar Cara Pemberian';
-
     protected static ?string $modelLabel = 'Benar Cara Pemberian';
-
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {
@@ -88,7 +85,10 @@ class BenarCaraResource extends Resource
     {
         return $table
             ->columns([
-                // Menampilkan nilai dari relasi untuk kolom no_reg dan no_cm
+                Tables\Columns\TextColumn::make('petugas.name')
+                    ->label('Petugas')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_cm')
                     ->label('No. CM Pasien')
                     ->searchable()

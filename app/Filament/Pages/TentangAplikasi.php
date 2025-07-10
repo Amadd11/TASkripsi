@@ -41,5 +41,5 @@ class TentangAplikasi extends Page
     /**
      * Sub-judul yang akan ditampilkan di bawah judul utama.
      */
-    protected ?string $subheading = 'Informasi detail mengenai aplikasi SIM 12 RIGHT-MU.';
+    protected ?string $subheading = 'Informasi detail mengenai aplikasi 12 SMART-MU.';
 }

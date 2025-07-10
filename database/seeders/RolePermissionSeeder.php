@@ -20,6 +20,7 @@ class RolePermissionSeeder extends Seeder
 
         $superAdmin = User::create([
             'name' => 'Super Admin',
+            'nbm' => '10987',
             'email' => 'superadmin@example.com',
             'password' => Hash::make('password'), // Jangan lupa untuk mengganti dengan password yang aman
         ]);
@@ -27,6 +28,7 @@ class RolePermissionSeeder extends Seeder
         // Membuat perawat
         $perawat = User::create([
             'name' => 'Perawat',
+            'nbm' => '11109',
             'email' => 'perawat@example.com',
             'password' => Hash::make('password'),
         ]);
@@ -37,6 +39,7 @@ class RolePermissionSeeder extends Seeder
         // Membuat pimpinan
         $pimpinan = User::create([
             'name' => 'Pimpinan',
+            'nbm' => '16789',
             'email' => 'pimpinan@example.com',
             'password' => Hash::make('password'),
         ]);

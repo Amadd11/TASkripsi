@@ -22,8 +22,7 @@ class BenarDosisResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-adjustments-vertical';
     protected static ?string $pluralModelLabel = 'Benar Dosis';
     protected static ?string $modelLabel = 'Benar Dosis';
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {
@@ -95,6 +94,10 @@ class BenarDosisResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('petugas.name')
+                    ->label('Petugas')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_cm')
                     ->label('No. CM Pasien')
                     ->searchable()

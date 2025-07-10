@@ -18,11 +18,10 @@ class BenarObatResource extends Resource
 {
     protected static ?string $model = BenarObat::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-archive-box'; // Ikon navigasi yang relevan untuk obat
+    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
     protected static ?string $pluralModelLabel = 'Benar Obat';
     protected static ?string $modelLabel = 'Benar Obat';
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {

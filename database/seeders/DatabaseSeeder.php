@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             MasterPasienSeeder::class,
             FarTransactionSeeder::class,
-            Prinsip12BenarSeeder::class
+            // Prinsip12BenarSeeder::class
         ]);
     }
 }

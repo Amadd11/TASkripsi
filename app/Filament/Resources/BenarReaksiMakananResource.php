@@ -21,8 +21,7 @@ class BenarReaksiMakananResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
     protected static ?string $pluralModelLabel = 'Benar Reaksi Makanan';
     protected static ?string $modelLabel = 'Benar Reaksi Makanan';
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {

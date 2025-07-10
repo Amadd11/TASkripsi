@@ -19,11 +19,9 @@ class BenarReaksiObatResource extends Resource
     protected static ?string $model = BenarReaksiObat::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shield-exclamation';
-
     protected static ?string $pluralModelLabel = 'Benar Reaksi Obat';
     protected static ?string $modelLabel = 'Benar Reaksi Obat';
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {

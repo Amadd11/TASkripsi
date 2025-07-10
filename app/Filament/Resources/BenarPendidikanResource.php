@@ -21,8 +21,7 @@ class BenarPendidikanResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $pluralModelLabel = 'Benar Pendidikan';
     protected static ?string $modelLabel = 'Benar Pendidikan';
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {

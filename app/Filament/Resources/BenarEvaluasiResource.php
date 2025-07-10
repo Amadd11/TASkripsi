@@ -21,8 +21,7 @@ class BenarEvaluasiResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
     protected static ?string $pluralModelLabel = 'Benar Evaluasi';
     protected static ?string $modelLabel = 'Benar Evaluasi';
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {

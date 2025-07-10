@@ -21,7 +21,7 @@ class BenarDokumentasiResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
     protected static ?string $pluralModelLabel = 'Benar Dokumentasi';
     protected static ?string $modelLabel = 'Benar Dokumentasi';
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {
@@ -105,12 +105,20 @@ class BenarDokumentasiResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('petugas.name')
+                    ->label('Petugas')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_cm')
                     ->label('No. CM Pasien')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_reg')
-                    ->label('No. Reg Transaksi')
+                    ->label('No. Registrasi')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('masterPasien.nama_pas')
+                    ->label('Nama Pasien')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_pasien')

@@ -22,7 +22,7 @@ class BenarObat extends Model
         'is_no_reg',
         'tanggal',
         'jam',
-        'id_petugas',
+        'user_id',
         'keterangan',
         'no_reg', // Foreign key
         'no_cm',  // Foreign key
@@ -57,5 +57,10 @@ class BenarObat extends Model
     public function masterPasien(): BelongsTo
     {
         return $this->belongsTo(MasterPasien::class, 'no_cm', 'no_cm');
+    }
+
+    public function petugas(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

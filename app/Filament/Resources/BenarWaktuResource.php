@@ -21,12 +21,9 @@ class BenarWaktuResource extends Resource
     protected static ?string $model = BenarWaktu::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
-
     protected static ?string $pluralModelLabel = 'Benar Waktu';
-
     protected static ?string $modelLabel = 'Benar Waktu';
-
-
+    protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
 
     public static function form(Form $form): Form
     {
