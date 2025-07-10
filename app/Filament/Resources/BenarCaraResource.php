@@ -27,6 +27,8 @@ class BenarCaraResource extends Resource
     protected static ?string $pluralModelLabel = 'Benar Cara Pemberian';
     protected static ?string $modelLabel = 'Benar Cara Pemberian';
     protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
+    protected static ?int $navigationSort = 4;
+
 
     public static function form(Form $form): Form
     {
@@ -94,7 +96,11 @@ class BenarCaraResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_reg')
-                    ->label('No. Reg Transaksi')
+                    ->label('No. Registrasi')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('masterPasien.nama_pas')
+                    ->label('Nama Pasien')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_oral')
@@ -106,11 +112,6 @@ class BenarCaraResource extends Resource
                 Tables\Columns\IconColumn::make('is_im')
                     ->label('Intramuskular')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('is_no_reg')
-                    ->label('No. Reg Internal')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false), // Default ditampilkan
                 Tables\Columns\TextColumn::make('tanggal')
                     ->label('Tanggal')
                     ->date('d M Y') // Format tanggal yang lebih mudah dibaca
@@ -119,11 +120,6 @@ class BenarCaraResource extends Resource
                     ->label('Jam')
                     ->time('H:i') // Format jam yang lebih mudah dibaca
                     ->sortable(),
-                Tables\Columns\TextColumn::make('id_petugas')
-                    ->label('ID Petugas')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('keterangan')
                     ->label('Keterangan')
                     ->limit(50) // Batasi panjang teks untuk tampilan tabel
@@ -156,6 +152,30 @@ class BenarCaraResource extends Resource
                 ]),
             ]);
     }
+
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     $user = Auth::user();
+    //     $query = parent::getEloquentQuery();
+
+    //     // Jika user yang login BUKAN super_admin, maka filter data.
+    //     // Ganti 'super_admin' dengan nama role admin Anda jika berbeda.
+    //     if (! $user->hasRole('super_admin')) {
+    //         // Ambil id dari master_petugas yang terhubung dengan user ini
+    //         $idPetugas = $user->id ?? null;
+
+    //         if ($idPetugas) {
+    //             // Tampilkan hanya data yang memiliki id_petugas yang sama
+    //             return $query->where('user_id', $idPetugas);
+    //         }
+
+    //         // Jika karena suatu alasan user tidak punya profil petugas, jangan tampilkan data apa pun.
+    //         return $query->whereRaw('1 = 0');
+    //     }
+
+    //     // Jika user adalah super_admin, tampilkan semua data.
+    //     return $query;
+    // }
 
     public static function getRelations(): array
     {

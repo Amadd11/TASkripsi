@@ -17,9 +17,12 @@ use App\Filament\Widgets\BenarReaksiObatStats;
 use App\Livewire\Chart\RekapPrinsipBenarChart;
 use App\Filament\Widgets\BenarDokumentasiStats;
 use App\Filament\Widgets\BenarReaksiMakananStats;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class RekapitulasiChartPage extends Page
 {
+    use HasPageShield;
+
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.rekapitulasi-chart-page';

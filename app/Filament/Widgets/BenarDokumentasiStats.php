@@ -9,7 +9,6 @@ use App\Filament\Pages\RekapitulasiChartPage;
 
 class BenarDokumentasiStats extends Widget
 {
-
     protected static ?string $heading = 'Benar Dokumentasi Pada Bulan Ini';
 
     protected static string $view = 'filament.widgets.benar-dokumentasi-stats';

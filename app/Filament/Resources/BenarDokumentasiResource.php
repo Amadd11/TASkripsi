@@ -22,6 +22,7 @@ class BenarDokumentasiResource extends Resource
     protected static ?string $pluralModelLabel = 'Benar Dokumentasi';
     protected static ?string $modelLabel = 'Benar Dokumentasi';
     protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
+    protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form
     {
@@ -74,24 +75,6 @@ class BenarDokumentasiResource extends Resource
                                     ->hint('Centang jika rute pemberian didokumentasikan dengan benar.')
                                     ->required(),
                             ])->columns(1),
-                        Forms\Components\DatePicker::make('tanggal')
-                            ->label('Tanggal')
-                            ->native(false)
-                            ->required(),
-                        Forms\Components\TimePicker::make('jam')
-                            ->label('Jam')
-                            ->required(),
-                        Forms\Components\TextInput::make('id_petugas')
-                            ->label('ID Petugas')
-                            ->minValue(0)
-                            ->numeric()
-                            ->helperText('ID petugas yang bertanggung jawab.'),
-                        Forms\Components\TextInput::make('is_no_reg')
-                            ->label('Nomor Registrasi Internal')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->helperText('Nomor registrasi internal untuk pencatatan.'),
                         Forms\Components\Textarea::make('keterangan')
                             ->label('Keterangan Tambahan')
                             ->placeholder('Masukkan keterangan tambahan terkait verifikasi dokumentasi.')
@@ -136,11 +119,6 @@ class BenarDokumentasiResource extends Resource
                 Tables\Columns\IconColumn::make('is_rute')
                     ->label('Rute Benar')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('is_no_reg')
-                    ->label('No. Reg Internal')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->label('Tanggal')
                     ->date('d M Y')

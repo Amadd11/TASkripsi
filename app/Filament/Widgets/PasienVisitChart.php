@@ -5,9 +5,11 @@ namespace App\Filament\Widgets;
 use Carbon\Carbon;
 use App\Models\MasterPasien;
 use Filament\Widgets\ChartWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class PasienVisitChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Jumlah Kunjungan Pasien Dalam Satu Tahun';
     protected static ?int $sort = 1;
     protected static ?string $maxHeight = '300px';

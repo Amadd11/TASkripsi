@@ -36,9 +36,9 @@
                 <li><strong>Benar Reaksi dengan Obat Lain:</strong> Monitoring efek samping, alergi, dan efek terapi
                     akibat interaksi obat.</li>
                 <li><strong>Benar Reaksi terhadap Makanan:</strong> Monitoring efek makanan terhadap obat.</li>
-                <li><strong>Hak Klien untuk Menolak:</strong> Pencatatan persetujuan atau penolakan (Informed Consent).
+                <li><strong>Benar Hak Client:</strong> Pencatatan persetujuan atau penolakan (Informed Consent).
                 </li>
-                <li><strong>Benar Pendidikan Kesehatan:</strong> Pemberian edukasi ke pasien dan keluarga.</li>
+                <li><strong>Benar Pendidikan:</strong> Pemberian edukasi ke pasien dan keluarga.</li>
             </ol>
 
             <div class="pt-4 mt-10 text-sm text-gray-500 border-t">

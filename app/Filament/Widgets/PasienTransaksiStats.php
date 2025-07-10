@@ -6,10 +6,13 @@ use Carbon\Carbon;
 use App\Models\MasterPasien;
 use App\Models\FarTransaction;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
-class StatsOverview extends BaseWidget
+class PasienTransaksiStats extends BaseWidget
 {
+    use HasWidgetShield;
+
     protected function getStats(): array
     {
         $totalPasien = MasterPasien::count();

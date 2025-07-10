@@ -22,6 +22,7 @@ class BenarPengkajianResource extends Resource
     protected static ?string $pluralModelLabel = 'Benar Pengkajian';
     protected static ?string $modelLabel = 'Benar Pengkajian';
     protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
+    protected static ?int $navigationSort = 8;
 
     public static function form(Form $form): Form
     {
@@ -62,24 +63,6 @@ class BenarPengkajianResource extends Resource
                                     ->hint('Centang jika tekanan darah pasien sudah didokumentasikan dengan benar.')
                                     ->required(),
                             ])->columns(1), // Toggles di dalam Fieldset tetap 1 kolom
-                        Forms\Components\DatePicker::make('tanggal')
-                            ->label('Tanggal')
-                            ->native(false)
-                            ->required(),
-                        Forms\Components\TimePicker::make('jam')
-                            ->label('Jam')
-                            ->required(),
-                        Forms\Components\TextInput::make('id_petugas')
-                            ->label('ID Petugas')
-                            ->minValue(0)
-                            ->numeric()
-                            ->helperText('ID petugas yang bertanggung jawab.'),
-                        Forms\Components\TextInput::make('is_no_reg')
-                            ->label('Nomor Registrasi Internal')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->helperText('Nomor registrasi internal untuk pencatatan.'),
                         Forms\Components\Textarea::make('keterangan')
                             ->label('Keterangan Tambahan')
                             ->columnSpanFull() // Memastikan textarea mengambil lebar penuh
@@ -93,12 +76,20 @@ class BenarPengkajianResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('petugas.name')
+                    ->label('Petugas')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_cm')
                     ->label('No. CM Pasien')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_reg')
-                    ->label('No. Reg Transaksi')
+                    ->label('No. Registrasi')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('masterPasien.nama_pas')
+                    ->label('Nama Pasien')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_suhu')
@@ -107,11 +98,6 @@ class BenarPengkajianResource extends Resource
                 Tables\Columns\IconColumn::make('is_tensi')
                     ->label('Tensi Benar')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('is_no_reg')
-                    ->label('No. Reg Internal')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->label('Tanggal')
                     ->date('d M Y')
@@ -120,11 +106,6 @@ class BenarPengkajianResource extends Resource
                     ->label('Jam')
                     ->time('H:i')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('id_petugas')
-                    ->label('ID Petugas')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('keterangan')
                     ->label('Keterangan')
                     ->limit(50)

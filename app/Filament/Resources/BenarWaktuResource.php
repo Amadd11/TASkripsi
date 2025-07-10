@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
@@ -9,12 +10,12 @@ use App\Models\BenarWaktu;
 use Filament\Tables\Table;
 use App\Models\MasterPasien;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Fieldset; // Import Fieldset
-use Filament\Tables\Filters\TernaryFilter; // Import TernaryFilter
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BenarWaktuResource\Pages;
+use Filament\Forms\Components\Fieldset; // Import Fieldset
 use App\Filament\Resources\BenarWaktuResource\RelationManagers;
+use Filament\Tables\Filters\TernaryFilter; // Import TernaryFilter
 
 class BenarWaktuResource extends Resource
 {
@@ -24,6 +25,7 @@ class BenarWaktuResource extends Resource
     protected static ?string $pluralModelLabel = 'Benar Waktu';
     protected static ?string $modelLabel = 'Benar Waktu';
     protected static ?string $navigationGroup = 'Hasil Pemeriksaan';
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
@@ -53,43 +55,61 @@ class BenarWaktuResource extends Resource
                         Forms\Components\TextInput::make('no_reg')
                             ->label('Nomor Registrasi')
                             ->disabled(),
-                        Fieldset::make('Verifikasi Waktu Pemberian')
-                            ->schema([
-                                Forms\Components\Toggle::make('is_pagi')
-                                    ->label('Pagi')
-                                    ->hint('Centang jika pemberian sesuai waktu pagi.')
-                                    ->required(),
-                                Forms\Components\Toggle::make('is_siang')
-                                    ->label('Siang')
-                                    ->hint('Centang jika pemberian sesuai waktu siang.')
-                                    ->required(),
-                                Forms\Components\Toggle::make('is_sore')
-                                    ->label('Sore')
-                                    ->hint('Centang jika pemberian sesuai waktu sore.')
-                                    ->required(),
-                                Forms\Components\Toggle::make('is_malam')
-                                    ->label('Malam')
-                                    ->hint('Centang jika pemberian sesuai waktu malam.')
-                                    ->required(),
-                            ])->columns(1),
-                        Forms\Components\DatePicker::make('tanggal')
-                            ->label('Tanggal')
-                            ->native(false)
-                            ->required(),
-                        Forms\Components\TimePicker::make('jam')
-                            ->label('Jam')
-                            ->required(),
-                        Forms\Components\TextInput::make('id_petugas')
-                            ->label('ID Petugas')
-                            ->minValue(0)
-                            ->numeric()
-                            ->helperText('ID petugas yang bertanggung jawab.'),
-                        Forms\Components\TextInput::make('is_no_reg')
-                            ->label('Nomor Registrasi Internal')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->helperText('Nomor registrasi internal untuk pencatatan.'),
+                        Forms\Components\Fieldset::make('Verifikasi Waktu Pemberian')->schema([
+
+                            Forms\Components\Toggle::make('waktu_is_pagi')
+                                ->label('Pagi (06:00 - 08:00)')
+                                ->live()
+                                ->afterStateUpdated(
+                                    fn(Forms\Set $set, $state) =>
+                                    $state ? $set('jam', Carbon::now('Asia/Jakarta')->format('H:i:s')) : null
+                                )
+                                ->disabled(
+                                    fn(): bool =>
+                                    !(now('Asia/Jakarta')->hour >= 6 && now('Asia/Jakarta')->hour < 8)
+                                ),
+
+                            Forms\Components\Toggle::make('is_siang')
+                                ->label('Siang (11:00 - 13:00)')
+                                ->live()
+                                ->afterStateUpdated(
+                                    fn(Forms\Set $set, $state) =>
+                                    $state ? $set('jam', Carbon::now('Asia/Jakarta')->format('H:i:s')) : null
+                                )
+                                ->disabled(
+                                    fn(): bool =>
+                                    !(now('Asia/Jakarta')->hour >= 11 && now('Asia/Jakarta')->hour < 13)
+                                ),
+
+                            Forms\Components\Toggle::make('is_sore')
+                                ->label('Sore (16:00 - 18:00)')
+                                ->live()
+                                ->afterStateUpdated(
+                                    fn(Forms\Set $set, $state) =>
+                                    $state ? $set('jam', Carbon::now('Asia/Jakarta')->format('H:i:s')) : null
+                                )
+                                ->disabled(
+                                    fn(): bool =>
+                                    !(now('Asia/Jakarta')->hour >= 16 && now('Asia/Jakarta')->hour < 18)
+                                ),
+
+                            Forms\Components\Toggle::make('is_malam')
+                                ->label('Malam (19:00 - 22:00)')
+                                ->live()
+                                ->afterStateUpdated(
+                                    fn(Forms\Set $set, $state) =>
+                                    $state ? $set('jam', Carbon::now('Asia/Jakarta')->format('H:i:s')) : null
+                                )
+                                ->disabled(
+                                    fn(): bool =>
+                                    !(now('Asia/Jakarta')->hour >= 19 && now('Asia/Jakarta')->hour < 24)
+                                ),
+                        ])->columns(2),
+                        Forms\Components\TextInput::make('jam')
+                            ->label('Jam Saat Ini')
+                            ->disabled()
+                            ->dehydrated()
+                            ->default(null),
                         Forms\Components\Textarea::make('keterangan')
                             ->label('Keterangan')
                             ->columnSpanFull()
@@ -103,12 +123,20 @@ class BenarWaktuResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('petugas.name')
+                    ->label('Petugas')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_cm')
                     ->label('No. CM Pasien')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('masterPasien.no_reg')
-                    ->label('No. Reg Transaksi')
+                    ->label('No. Registrasi')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('masterPasien.nama_pas')
+                    ->label('Nama Pasien')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_pagi')
@@ -123,11 +151,6 @@ class BenarWaktuResource extends Resource
                 Tables\Columns\IconColumn::make('is_malam')
                     ->label('Malam')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('is_no_reg')
-                    ->label('No. Reg Internal')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->label('Tanggal')
                     ->date('d M Y')
@@ -136,11 +159,6 @@ class BenarWaktuResource extends Resource
                     ->label('Jam')
                     ->time('H:i')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('id_petugas')
-                    ->label('ID Petugas')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('keterangan')
                     ->label('Keterangan')
                     ->limit(50)

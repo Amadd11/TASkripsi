@@ -19,6 +19,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationGroup = 'User Manajemen';
 
+    protected static ?int $navigationSort = 99;
+
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
@@ -63,9 +65,16 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                Tables\Columns\TextColumn::make('is_active')
                     ->label('Login Aktif')
-                    ->boolean(),
+                    ->badge()
+                    // Menggunakan formatStateUsing untuk mengubah boolean (true/false) menjadi teks
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Aktif' : 'Nonaktif')
+                    // Menggunakan color() untuk menentukan warna badge berdasarkan state
+                    ->color(fn(bool $state): string => match ($state) {
+                        true => 'success',
+                        false => 'danger',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

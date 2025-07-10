@@ -3,9 +3,12 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class TentangAplikasi extends Page
 {
+    use HasPageShield;
+
     /**
      * Tampilan Blade yang akan digunakan untuk halaman ini.
      */

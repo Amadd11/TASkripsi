@@ -17,7 +17,7 @@ class MasterPetugasResource extends Resource
 {
     protected static ?string $model = MasterPetugas::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
     protected static ?string $pluralModelLabel = 'Master Petugas';
     protected static ?string $modelLabel = 'Petugas';
 

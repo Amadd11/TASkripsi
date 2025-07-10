@@ -2,74 +2,77 @@
 
 namespace App\Filament\Pages\Auth;
 
-use Filament\Forms;
-use Filament\Pages\Auth\Login;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
+use Filament\Notifications\Notification;
+use Filament\Pages\Auth\Login as BaseLogin;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
-class LoginCustom extends Login
+class LoginCustom extends BaseLogin
 {
-    public ?string $login = null;
-    public ?string $password = null;
-    public bool $remember = false;
-
-    protected function getForms(): array
+    public function form(Form $form): Form
     {
-        return [
-            'form' => $this->makeForm()
-                ->schema([
-                    Forms\Components\TextInput::make('login') // Ganti dari email ke login
-                        ->label('Email/NBM')
-                        ->required()
-                        ->autofocus()
-                        ->autocomplete()
-                        ->type('text'), // ← ini penting agar validasi @ tidak muncul
+        return $form
+            ->schema([
+                TextInput::make('login')
+                    ->label('Email atau NBM')
+                    ->required()
+                    ->autofocus(),
 
-                    Forms\Components\TextInput::make('password')
-                        ->label(__('filament-panels::pages/auth/login.form.password.label'))
-                        ->password()
-                        ->required()
-                        ->autocomplete('current-password'),
-                    Forms\Components\Checkbox::make('remember')
-                        ->label(__('filament-panels::pages/auth/login.form.remember.label')),
-                ]),
-        ];
+                TextInput::make('password')
+                    ->label(__('filament-panels::pages/auth/login.form.password.label'))
+                    ->password()
+                    ->required(),
+
+                Checkbox::make('remember')
+                    ->label(__('filament-panels::pages/auth/login.form.remember.label')),
+            ])
+            ->statePath('data');
     }
 
-    public function authenticate(): LoginResponse
+    /**
+     * Menimpa method authenticate untuk menambahkan logika pengecekan yang lebih spesifik.
+     */
+    public function authenticate(): ?LoginResponse
     {
-        $credentials = [
-            'password' => $this->password,
-        ];
+        $data = $this->form->getState();
+        $login = $data['login'];
+        $password = $data['password'];
+        $remember = $data['remember'];
 
-        if (filter_var($this->login, FILTER_VALIDATE_EMAIL)) {
-            $credentials['email'] = $this->login;
-        } else {
-            $credentials['nbm'] = $this->login;
+        // 1. Cari user berdasarkan email atau nbm
+        $user = User::query()
+            ->where('email', $login)
+            ->orWhere('nbm', $login)
+            ->first();
+
+        // 2. Jika user tidak ditemukan ATAU password salah, kirim pesan error yang sama.
+        // Ini adalah praktik keamanan yang baik untuk mencegah user enumeration.
+        if (! $user || ! Hash::check($password, $user->getAuthPassword())) {
+            throw ValidationException::withMessages([
+                'data.login' => __('filament-panels::pages/auth/login.messages.failed'),
+            ]);
         }
 
-        // Tambahkan pengecekan is_active
-        $userQuery = \App\Models\User::query();
-
-        if (isset($credentials['email'])) {
-            $userQuery->where('email', $credentials['email']);
-        } else {
-            $userQuery->where('nbm', $credentials['nbm']);
+        // 3. Jika kredensial sudah benar, BARU periksa apakah akunnya aktif.
+        // Ini memberikan pesan error yang spesifik dan jelas.
+        if (! $user->is_active) {
+            throw ValidationException::withMessages([
+                'data.login' => 'Akun Anda telah dinonaktifkan. Silakan hubungi administrator.',
+            ]);
         }
 
-        $user = $userQuery->first();
+        // 4. Jika semua pengecekan lolos, loginkan user.
+        Auth::login($user, $remember);
 
-        if (! $user || ! $user->is_active) {
-            $this->addError('login', 'Akun Anda tidak aktif.');
-            return app(LoginResponse::class);
-        }
+        session()->regenerate();
 
-        if (Auth::attempt($credentials, $this->remember)) {
-            session()->regenerate();
-            return app(LoginResponse::class);
-        }
-
-        $this->addError('login', __('auth.failed'));
         return app(LoginResponse::class);
     }
 }

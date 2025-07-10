@@ -26,9 +26,12 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Forms\Concerns\InteractsWithForms;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class IsiCeklist12Benar extends Page implements HasForms
 {
+    use HasPageShield;
+
     use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
@@ -97,6 +100,13 @@ class IsiCeklist12Benar extends Page implements HasForms
                 Forms\Components\Tabs::make('Checklist 12 Benar')
                     ->tabs([
                         Forms\Components\Tabs\Tab::make('1. Benar Pasien')->schema([
+                            Forms\Components\Toggle::make('pasien_check_all')
+                                ->label('Pilih Semua')
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                    $set('pasien_is_nama', $state);
+                                    $set('pasien_is_tgl_lahir', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Identitas Pasien')->schema([
                                 Forms\Components\Toggle::make('pasien_is_nama')
                                     ->label('Apakah Nama Pasien Benar?')
@@ -111,6 +121,14 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('2. Benar Obat')->schema([
+                            Forms\Components\Toggle::make('obat_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('obat_is_nama_obat', $state);
+                                    $set('obat_is_label', $state);
+                                    $set('obat_is_resep', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Obat')->schema([
                                 Forms\Components\Toggle::make('obat_is_nama_obat')
                                     ->label('Apakah Nama Obat Benar?')
@@ -129,6 +147,13 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('3. Benar Dosis')->schema([
+                            Forms\Components\Toggle::make('dosis_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('dosis_is_jumlah', $state);
+                                    $set('dosis_is_potensi', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Dosis')->schema([
                                 Forms\Components\Toggle::make('dosis_is_jumlah')
                                     ->label('Apakah Jumlah/Dosis sudah sesuai?')
@@ -143,6 +168,14 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('4. Benar Cara')->schema([
+                            Forms\Components\Toggle::make('cara_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('cara_is_oral', $state);
+                                    $set('cara_is_iv', $state);
+                                    $set('cara_is_im', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Cara Pemberian')->schema([
                                 Forms\Components\Toggle::make('cara_is_oral')
                                     ->label('Apakah Pemberian Oral?')
@@ -161,20 +194,88 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('5. Benar Waktu')->schema([
+                            Forms\Components\Toggle::make('waktu_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function (Forms\Set $set, $state) {
+                                    $currentHour = now('Asia/Jakarta')->hour;
+                                    if ($currentHour >= 6 && $currentHour < 8) $set('waktu_is_pagi', $state);
+                                    if ($currentHour >= 11 && $currentHour < 13) $set('waktu_is_siang', $state);
+                                    if ($currentHour >= 16 && $currentHour < 18) $set('waktu_is_sore', $state);
+                                    if ($currentHour >= 19 && $currentHour < 22) $set('waktu_is_malam', $state);
+                                })
+                                ->dehydrated(false),
                             Forms\Components\Fieldset::make('Verifikasi Waktu Pemberian')->schema([
-                                Forms\Components\Toggle::make('waktu_is_pagi')->label('Pagi (06:00 - 10:00)')
-                                    ->hint('Centang jika pemberian sesuai waktu pagi.')->required(),
-                                Forms\Components\Toggle::make('waktu_is_siang')->label('Siang (11:00 - 14:00)')
-                                    ->hint('Centang jika pemberian sesuai waktu siang.')->required(),
-                                Forms\Components\Toggle::make('waktu_is_sore')->label('Sore (15:00 - 18:00)')
-                                    ->hint('Centang jika pemberian sesuai waktu sore.')->required(),
-                                Forms\Components\Toggle::make('waktu_is_malam')->label('Malam (19:00 - 22:00)')
-                                    ->hint('Centang jika pemberian sesuai waktu malam.')->required(),
-                            ])->columns(1),
+
+                                Forms\Components\Toggle::make('waktu_is_pagi')
+                                    ->label('Pagi (06:00 - 08:00)')
+                                    ->live()
+                                    ->afterStateUpdated(
+                                        fn(Forms\Set $set, $state) =>
+                                        $state ? $set('jam', Carbon::now('Asia/Jakarta')->format('H:i:s')) : null
+                                    )
+                                    ->disabled(
+                                        fn(): bool =>
+                                        !(now('Asia/Jakarta')->hour >= 6 && now('Asia/Jakarta')->hour < 8)
+                                    ),
+
+                                Forms\Components\Toggle::make('waktu_is_siang')
+                                    ->label('Siang (11:00 - 13:00)')
+                                    ->live()
+                                    ->afterStateUpdated(
+                                        fn(Forms\Set $set, $state) =>
+                                        $state ? $set('jam', Carbon::now('Asia/Jakarta')->format('H:i:s')) : null
+                                    )
+                                    ->disabled(
+                                        fn(): bool =>
+                                        !(now('Asia/Jakarta')->hour >= 11 && now('Asia/Jakarta')->hour < 13)
+                                    ),
+
+                                Forms\Components\Toggle::make('waktu_is_sore')
+                                    ->label('Sore (16:00 - 18:00)')
+                                    ->live()
+                                    ->afterStateUpdated(
+                                        fn(Forms\Set $set, $state) =>
+                                        $state ? $set('jam', Carbon::now('Asia/Jakarta')->format('H:i:s')) : null
+                                    )
+                                    ->disabled(
+                                        fn(): bool =>
+                                        !(now('Asia/Jakarta')->hour >= 16 && now('Asia/Jakarta')->hour < 18)
+                                    ),
+
+                                Forms\Components\Toggle::make('waktu_is_malam')
+                                    ->label('Malam (19:00 - 22:00)')
+                                    ->live()
+                                    ->afterStateUpdated(
+                                        fn(Forms\Set $set, $state) =>
+                                        $state ? $set('jam', Carbon::now('Asia/Jakarta')->format('H:i:s')) : null
+                                    )
+                                    ->disabled(
+                                        fn(): bool =>
+                                        !(now('Asia/Jakarta')->hour >= 19 && now('Asia/Jakarta')->hour < 24)
+                                    ),
+
+                            ])->columns(2),
+
+                            Forms\Components\TextInput::make('jam')
+                                ->label('Jam Saat Ini')
+                                ->disabled()
+                                ->dehydrated()
+                                ->default(null),
                             Forms\Components\Textarea::make('waktu_keterangan')->label('Keterangan')->rows(2),
                         ]),
 
                         Forms\Components\Tabs\Tab::make('6. Benar Dokumentasi')->schema([
+                            Forms\Components\Toggle::make('dok_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('dok_is_pasien', $state);
+                                    $set('dok_is_dosis', $state);
+                                    $set('dok_is_obat', $state);
+                                    $set('dok_is_waktu', $state);
+                                    $set('dok_is_rute', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Kelengkapan Dokumentasi')->schema([
                                 Forms\Components\Toggle::make('dok_is_pasien')
                                     ->label('Apakah Dokumentasi Pasien Benar?')
@@ -201,6 +302,14 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('7. Benar Evaluasi')->schema([
+                            Forms\Components\Toggle::make('evaluasi_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('evaluasi_is_efek_samping', $state);
+                                    $set('evaluasi_is_alergi', $state);
+                                    $set('evaluasi_is_efek_terapi', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Evaluasi Pasien')->schema([
                                 Forms\Components\Toggle::make('evaluasi_is_efek_samping')
                                     ->label('Apakah ada Efek Samping?')
@@ -219,6 +328,13 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('8. Benar Pengkajian')->schema([
+                            Forms\Components\Toggle::make('pengkajian_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('pengkajian_is_suhu', $state);
+                                    $set('pengkajian_is_tensi', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Pengkajian Awal')->schema([
                                 Forms\Components\Toggle::make('pengkajian_is_suhu')
                                     ->label('Apakah Suhu sudah sesuai?')
@@ -233,6 +349,14 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('9. Benar Reaksi Obat')->schema([
+                            Forms\Components\Toggle::make('reaksi_obat_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('reaksi_obat_is_efek_samping', $state);
+                                    $set('reaksi_obat_is_alergi', $state);
+                                    $set('reaksi_obat_is_efek_terapi', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Reaksi Terhadap Obat Lain')->schema([
                                 Forms\Components\Toggle::make('reaksi_obat_is_efek_samping')
                                     ->label('Apakah ada Efek Samping?')
@@ -251,6 +375,12 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('10. Benar Reaksi Makanan')->schema([
+                            Forms\Components\Toggle::make('reaksi_makanan_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('reaksi_makanan_is_efek_makanan', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Reaksi Terhadap Makanan')->schema([
                                 Forms\Components\Toggle::make('reaksi_makanan_is_efek_makanan')
                                     ->label('Apakah ada Efek Reaksi Makanan?')
@@ -261,6 +391,12 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('11. Benar Hak Klien')->schema([
+                            Forms\Components\Toggle::make('hak_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('hak_is_ic', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Hak Klien')->schema([
                                 Forms\Components\Toggle::make('hak_is_ic')
                                     ->label('Apakah Informed Consent sudah diberikan?')
@@ -271,6 +407,12 @@ class IsiCeklist12Benar extends Page implements HasForms
                         ]),
 
                         Forms\Components\Tabs\Tab::make('12. Benar Pendidikan')->schema([
+                            Forms\Components\Toggle::make('pendidikan_check_all')
+                                ->label('Pilih Semua')
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('pendidikan_is_edukasi', $state);
+                                }),
                             Forms\Components\Fieldset::make('Verifikasi Pendidikan Kesehatan')->schema([
                                 Forms\Components\Toggle::make('pendidikan_is_edukasi')
                                     ->label('Apakah Edukasi sudah diberikan?')
