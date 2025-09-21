@@ -34,6 +34,7 @@ class BenarPengkajian extends Model
         'is_suhu',
         'is_tensi',
         'is_no_reg',
+        'is_riwayat_alergi',
         'tanggal',
         'jam',
         'user_id',
@@ -43,6 +44,7 @@ class BenarPengkajian extends Model
     ];
 
     protected $casts = [
+        'is_riwayat_alergi' => 'boolean',
         'is_suhu' => 'boolean',
         'is_tensi' => 'boolean',
         'tanggal' => 'date', // Mengubah ke tipe date

@@ -49,9 +49,21 @@ class BenarCaraStats extends Widget
         } else {
             $this->allTrue = BenarCara::query()
                 ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
-                ->where('is_oral', true)
-                ->where('is_im', true)
-                ->where('is_iv', true)
+                ->where(function ($query) {
+                    $query->where('is_oral', true)
+                        ->orWhere('is_iv', true)
+                        ->orWhere('is_im', true)
+                        ->orWhere('is_intratekal', true)
+                        ->orWhere('is_subkutan', true)
+                        ->orWhere('is_sublingual', true)
+                        ->orWhere('is_rektal', true)
+                        ->orWhere('is_vaginal', true)
+                        ->orWhere('is_okular', true)
+                        ->orWhere('is_otik', true)
+                        ->orWhere('is_nasal', true)
+                        ->orWhere('is_nebulisasi', true)
+                        ->orWhere('is_topikal', true);
+                })
                 ->count();
 
             $this->allTruePct = ($this->allTrue / $this->total) * 100;

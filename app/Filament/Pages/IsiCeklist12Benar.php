@@ -220,7 +220,7 @@ class IsiCeklist12Benar extends Page implements HasForms
                                     ),
 
                                 Forms\Components\Toggle::make('waktu_is_siang')
-                                    ->label('Siang (11:00 - 13:00)')
+                                    ->label('Siang (13:00 - 14:00)')
                                     ->live()
                                     ->afterStateUpdated(
                                         fn(Forms\Set $set, $state) =>
@@ -232,7 +232,7 @@ class IsiCeklist12Benar extends Page implements HasForms
                                     ),
 
                                 Forms\Components\Toggle::make('waktu_is_sore')
-                                    ->label('Sore (16:00 - 18:00)')
+                                    ->label('Sore (17:00 - 18:00)')
                                     ->live()
                                     ->afterStateUpdated(
                                         fn(Forms\Set $set, $state) =>
@@ -244,7 +244,7 @@ class IsiCeklist12Benar extends Page implements HasForms
                                     ),
 
                                 Forms\Components\Toggle::make('waktu_is_malam')
-                                    ->label('Malam (19:00 - 22:00)')
+                                    ->label('Malam (21:00 - 22:00)')
                                     ->live()
                                     ->afterStateUpdated(
                                         fn(Forms\Set $set, $state) =>
@@ -252,7 +252,7 @@ class IsiCeklist12Benar extends Page implements HasForms
                                     )
                                     ->disabled(
                                         fn(): bool =>
-                                        !(now('Asia/Jakarta')->hour >= 19 && now('Asia/Jakarta')->hour < 24)
+                                        !(now('Asia/Jakarta')->hour >= 19 && now('Asia/Jakarta')->hour < 22)
                                     ),
 
                             ])->columns(2),

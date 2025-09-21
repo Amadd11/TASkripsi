@@ -102,7 +102,7 @@ class BenarWaktuResource extends Resource
                                 )
                                 ->disabled(
                                     fn(): bool =>
-                                    !(now('Asia/Jakarta')->hour >= 19 && now('Asia/Jakarta')->hour < 24)
+                                    !(now('Asia/Jakarta')->hour >= 19 && now('Asia/Jakarta')->hour < 22)
                                 ),
                         ])->columns(2),
                         Forms\Components\TextInput::make('jam')

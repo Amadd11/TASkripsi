@@ -51,6 +51,7 @@ class BenarPengkajianStats extends Widget
                 ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
                 ->where('is_suhu', true)
                 ->where('is_tensi', true)
+                ->where('is_riwayat_alergi', true)
                 ->count();
 
             $this->allTruePct = ($this->allTrue / $this->total) * 100;

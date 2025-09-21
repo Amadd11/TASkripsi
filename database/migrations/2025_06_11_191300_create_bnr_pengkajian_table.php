@@ -15,6 +15,7 @@ return new class extends Migration
             $table->increments('id_bnr_pengkajian');
             $table->boolean('is_suhu')->default(0); // Diubah dari int ke boolean
             $table->boolean('is_tensi')->default(0); // Diubah dari int ke boolean
+            $table->boolean('is_riwayat_alergi')->default(0); // Diubah dari int ke boolean
             $table->integer('is_no_reg')->nullable()->default(0); // Tetap int karena defaultnya 0
             $table->date('tanggal')->nullable();
             $table->time('jam')->nullable(); // Diubah dari char(8) ke time

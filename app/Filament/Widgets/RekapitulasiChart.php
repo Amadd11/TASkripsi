@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
-
 use App\Models\BenarCara;
 use App\Models\BenarDokumentasi;
 use App\Models\BenarDosis;
@@ -21,13 +20,9 @@ use App\Filament\Pages\RekapitulasiChartPage;
 
 class RekapitulasiChart extends ChartWidget
 {
-    // Heading sekarang diatur secara dinamis, jadi kita komentari ini.
-    // protected static ?string $heading = 'Rekapitulasi Kepatuhan 12 Benar (Tahun Terpilih)';
-
     protected static ?int $sort = 11;
     protected static ?string $maxHeight = '300px';
 
-    // Properti untuk filter. Formatnya adalah 'Y-m'.
     public ?string $filter = null;
 
     public function getColumnSpan(): int | string | array
@@ -39,11 +34,9 @@ class RekapitulasiChart extends ChartWidget
     {
         return request()->route()?->getName() === RekapitulasiChartPage::getRouteName();
     }
-    
 
     public function mount(): void
     {
-        // Atur filter default ke bulan ini saat widget dimuat
         $this->filter = now()->format('Y-m');
     }
 
@@ -62,13 +55,10 @@ class RekapitulasiChart extends ChartWidget
         return 'bar';
     }
 
-    /**
-     * DIUBAH: Filter sekarang menghasilkan daftar bulan, bukan tahun.
-     */
     protected function getFilters(): ?array
     {
         $months = [];
-        for ($i = 0; $i < 12; $i++) { // Tampilkan 12 bulan terakhir
+        for ($i = 0; $i < 12; $i++) {
             $date = now()->subMonths($i);
             $months[$date->format('Y-m')] = $date->translatedFormat('F Y');
         }
@@ -77,7 +67,6 @@ class RekapitulasiChart extends ChartWidget
 
     protected function getData(): array
     {
-        // DIUBAH: Gunakan filter bulan untuk menentukan rentang tanggal
         $yearMonth = $this->filter ?? now()->format('Y-m');
         $selectedDate = Carbon::createFromFormat('Y-m', $yearMonth);
 
@@ -87,65 +76,91 @@ class RekapitulasiChart extends ChartWidget
         $calculatePercentage = fn($true, $total) => $total > 0 ? round(($true / $total) * 100, 2) : 0;
 
         $categories = [
-            // ... (array kategori Anda tidak perlu diubah)
             [
                 'label' => 'Benar Cara',
                 'model' => BenarCara::class,
-                'conditions' => ['is_oral' => 1, 'is_iv' => 1, 'is_im' => 1],
+                // MENGGUNAKAN 'OR' KARENA HANYA SATU RUTE YANG BENAR
+                'operator' => 'or',
+                'conditions' => [
+                    'is_oral' => 1,
+                    'is_iv' => 1,
+                    'is_im' => 1,
+                    'is_intratekal' => 1,
+                    'is_subkutan' => 1,
+                    'is_sublingual' => 1,
+                    'is_rektal' => 1,
+                    'is_vaginal' => 1,
+                    'is_okular' => 1,
+                    'is_otik' => 1,
+                    'is_nasal' => 1,
+                    'is_nebulisasi' => 1,
+                    'is_topikal' => 1,
+                ],
             ],
             [
                 'label' => 'Benar Dokumentasi',
                 'model' => BenarDokumentasi::class,
+                'operator' => 'and',
                 'conditions' => ['is_pasien' => 1, 'is_dosis' => 1, 'is_obat' => 1, 'is_waktu' => 1, 'is_rute' => 1],
             ],
             [
                 'label' => 'Benar Dosis',
                 'model' => BenarDosis::class,
+                'operator' => 'and',
                 'conditions' => ['is_jumlah' => 1, 'is_potensi' => 1],
             ],
             [
                 'label' => 'Benar Evaluasi',
                 'model' => BenarEvaluasi::class,
+                'operator' => 'and',
                 'conditions' => ['is_efek_samping' => 1, 'is_alergi' => 1, 'is_efek_terapi' => 1],
             ],
             [
                 'label' => 'Benar Hak Klien',
                 'model' => BenarHakClient::class,
+                'operator' => 'and',
                 'conditions' => ['is_ic' => 1],
             ],
             [
                 'label' => 'Benar Pasien',
                 'model' => BenarPasien::class,
+                'operator' => 'and',
                 'conditions' => ['is_nama' => 1, 'is_tgl_lahir' => 1],
             ],
             [
                 'label' => 'Benar Obat',
                 'model' => BenarObat::class,
+                'operator' => 'and',
                 'conditions' => ['is_nama_obat' => 1, 'is_label' => 1, 'is_resep' => 1],
             ],
             [
                 'label' => 'Benar Pendidikan',
                 'model' => BenarPendidikan::class,
+                'operator' => 'and',
                 'conditions' => ['is_edukasi' => 1],
             ],
             [
                 'label' => 'Benar Pengkajian',
                 'model' => BenarPengkajian::class,
-                'conditions' => ['is_suhu' => 1, 'is_tensi' => 1],
+                'operator' => 'and',
+                'conditions' => ['is_suhu' => 1, 'is_tensi' => 1, 'is_riwayat_alergi' => 1],
             ],
             [
                 'label' => 'Benar Reaksi Makanan',
                 'model' => BenarReaksiMakanan::class,
+                'operator' => 'and',
                 'conditions' => ['is_efek_makanan' => 1],
             ],
             [
                 'label' => 'Benar Reaksi Obat',
                 'model' => BenarReaksiObat::class,
+                'operator' => 'and',
                 'conditions' => ['is_efek_samping' => 1, 'is_alergi' => 1, 'is_efek_terapi' => 1],
             ],
             [
                 'label' => 'Benar Waktu',
                 'model' => BenarWaktu::class,
+                'operator' => 'and',
                 'conditions' => ['is_pagi' => 1, 'is_siang' => 1, 'is_sore' => 1, 'is_malam' => 1],
             ],
         ];
@@ -158,14 +173,27 @@ class RekapitulasiChart extends ChartWidget
         foreach ($categories as $category) {
             $labels[] = $category['label'];
 
-            // Query akan menggunakan rentang tanggal bulanan dari variabel $start dan $end
             $query = $category['model']::whereBetween('tanggal', [$start, $end]);
             $total = $query->count();
 
             $compliantQuery = clone $query;
-            foreach ($category['conditions'] as $field => $value) {
-                $compliantQuery->where($field, $value);
-            }
+            $compliantQuery->where(function ($query) use ($category) {
+                // Logika kueri yang diperbaiki untuk mendukung operator 'AND' dan 'OR'
+                $firstCondition = true;
+                foreach ($category['conditions'] as $field => $value) {
+                    if ($category['operator'] === 'or') {
+                        if ($firstCondition) {
+                            $query->where($field, $value);
+                            $firstCondition = false;
+                        } else {
+                            $query->orWhere($field, $value);
+                        }
+                    } else { // 'and' operator
+                        $query->where($field, $value);
+                    }
+                }
+            });
+
             $compliant = $compliantQuery->count();
             $percentage = $calculatePercentage($compliant, $total);
 
@@ -173,9 +201,9 @@ class RekapitulasiChart extends ChartWidget
             $compliantCounts[] = $compliant;
 
             $colors[] = match (true) {
-                $percentage >= 80 => '#10B981',   // Hijau
-                $percentage >= 50 => '#FACC15',   // Kuning
-                default            => '#EF4444',   // Merah
+                $percentage >= 80 => '#10B981',
+                $percentage >= 50 => '#FACC15',
+                default => '#EF4444',
             };
         }
 
@@ -192,7 +220,7 @@ class RekapitulasiChart extends ChartWidget
                     'borderWidth' => 1,
                 ],
             ],
-            'options' => [ // Bagian options tetap sama
+            'options' => [
                 'responsive' => true,
                 'scales' => [
                     'y' => ['beginAtZero' => true, 'max' => 100],

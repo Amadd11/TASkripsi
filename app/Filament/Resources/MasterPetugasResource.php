@@ -18,7 +18,9 @@ class MasterPetugasResource extends Resource
     protected static ?string $model = MasterPetugas::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    protected static ?string $navigationGroup = 'User Manajemen';
     protected static ?string $pluralModelLabel = 'Master Petugas';
+    protected static ?int $navigationSort = 14;
     protected static ?string $modelLabel = 'Petugas';
 
     public static function form(Form $form): Form
@@ -160,38 +162,56 @@ class MasterPetugasResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Menambahkan urutan default berdasarkan nama user
+            ->defaultSort('user.name', 'asc')
             ->columns([
+                // Menggabungkan nama, nbm, dan email menjadi satu kolom
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Nama Petugas')
+                    ->label('Petugas')
+                    ->description(fn(MasterPetugas $record): string => "NBM: {$record->user->nbm} | Email: {$record->user->email}")
+                    ->searchable(['name', 'nbm', 'email']) // Pencarian bisa melalui ketiga field
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('jabatan')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.nbm')
-                    ->label('NBM')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('user.email')
-                    ->label('Email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jabatan')
-                    ->searchable(),
+
+                // DIUBAH: Kolom telepon sekarang terlihat secara default
+                Tables\Columns\TextColumn::make('telepon')
+                    ->searchable()
+                    ->toggleable(), // Terlihat secara default, tapi bisa disembunyikan
+
+                Tables\Columns\IconColumn::make('biodata_aktif')
+                    ->label('Status')
+                    ->boolean(),
+
                 Tables\Columns\TextColumn::make('unit')
                     ->label('Unit Kerja')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('telepon')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\IconColumn::make('biodata_aktif')
-                    ->label('Status Biodata')
-                    ->boolean(),
+
+                // BARU: Menambahkan kolom alamat
+                Tables\Columns\TextColumn::make('alamat')
+                    ->searchable()
+                    ->limit(30) // Batasi panjang teks yang ditampilkan di tabel
+                    ->tooltip(fn(MasterPetugas $record): ?string => $record->alamat) // Tampilkan alamat lengkap saat kursor diarahkan
+                    ->toggleable(isToggledHiddenByDefault: true), // Disembunyikan default, bisa diaktifkan dari 'Toggle Columns'
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('biodata_aktif')
                     ->label('Status Aktif')
                     ->trueLabel('Aktif')
                     ->falseLabel('Tidak Aktif'),
+
+                // Filter berdasarkan jabatan
+                Tables\Filters\SelectFilter::make('jabatan')
+                    ->options(
+                        fn(): array => MasterPetugas::query()->whereNotNull('jabatan')->distinct()->pluck('jabatan', 'jabatan')->all()
+                    ),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
